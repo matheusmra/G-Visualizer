@@ -54,7 +54,7 @@ export default function ControlDeck({
         </div>
       </div>
 
-      {/* Closure group */
+      {/* Closure group */}
       <div className="flex items-center gap-1">
         <span className="text-xs text-gray-600 dark:text-gray-500 mr-1 hidden sm:block">Fecho</span>
         <div className="flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
@@ -75,7 +75,7 @@ export default function ControlDeck({
         </div>
       </div>
 
-      {/* Start node */
+      {/* Start node */}
       {nodeIds.length > 0 && (
         <div className="flex items-center gap-2">
           <label className="text-xs text-gray-700 dark:text-gray-400 font-medium whitespace-nowrap">Nó inicial</label>
