@@ -32,13 +32,13 @@ A abordagem central é o **estado imutável por passo**: toda transição de est
 
 ## Algoritmos Disponíveis
 
-| Algoritmo | Arquivo | Complexidade |
-|-----------|---------|--------------|
-| Busca em Largura (BFS) | `src/algorithms/BFS.js` | O(V + E) |
-| Busca em Profundidade (DFS) | `src/algorithms/DFS.js` | O(V + E) |
-| Fecho Transitivo Direto (FTD) | `src/algorithms/FTC.js` | O(V + E) |
-| Fecho Transitivo Indireto (FTI) | `src/algorithms/FTC.js` | O(V + E) |
-| Conectividade (SCC / Pontes / APs) | `src/algorithms/connectivity.js` | O(V + E) |
+| Algoritmo | Arquivo |
+|-----------|---------|
+| Busca em Largura (BFS) | `src/algorithms/BFS.js` |
+| Busca em Profundidade (DFS) | `src/algorithms/DFS.js` |
+| Fecho Transitivo Direto (FTD) | `src/algorithms/FTC.js` |
+| Fecho Transitivo Indireto (FTI) | `src/algorithms/FTC.js` | 
+| Conectividade (SCC / Pontes / APs) | `src/algorithms/connectivity.js` |
 
 → [Documentação completa dos algoritmos](docs/algorithms.md)
 
