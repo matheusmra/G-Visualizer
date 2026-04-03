@@ -7,6 +7,8 @@ import DataPanel from '../components/DataPanel.jsx';
 import PseudocodePanel from '../components/PseudocodePanel.jsx';
 import ControlDeck from '../components/ControlDeck.jsx';
 import { ToastContainer } from '../components/ToastNotification.jsx';
+import ConnectivityPanel from '../components/ConnectivityPanel.jsx';
+import GraphRepresentationPanel from '../components/GraphRepresentationPanel.jsx';
 import { PRESETS } from '../data/presets.js';
 import { initBFS, stepBFS, buildAdjMap } from '../algorithms/BFS.js';
 import { initDFS, stepDFS } from '../algorithms/DFS.js';
@@ -47,8 +49,7 @@ export default function VisualizerPage() {
 
   // ── UI ────────────────────────────────────────────────────────────────────
   const [rightPanel, setRightPanel] = useState('data');
-  const [toasts,     setToasts]     = useState([]);
-
+  const [toasts,     setToasts]     = useState([]);  const [connectivityHighlight, setConnectivityHighlight] = useState(null);
   // ── Derivados ─────────────────────────────────────────────────────────────
   const isCustom          = presetKey === 'custom';
   const preset            = isCustom ? null : PRESETS[presetKey];
@@ -278,6 +279,7 @@ export default function VisualizerPage() {
             editMode={isCustom ? editMode : null}
             isDirected={currentIsDirected}
             onGraphChange={handleGraphChange}
+            connectivityHighlight={connectivityHighlight}
           />
         </div>
 
@@ -287,13 +289,15 @@ export default function VisualizerPage() {
           {/* Abas */}
           <div className="flex border-b border-gray-200 dark:border-gray-700 shrink-0">
             {[
-              { id: 'data',   label: 'Estruturas de Dados' },
-              { id: 'pseudo', label: 'Pseudocódigo' },
+              { id: 'data',           label: 'Estruturas' },
+              { id: 'pseudo',         label: 'Pseudocódigo' },
+              { id: 'connectivity',   label: 'Conectividade' },
+              { id: 'representations', label: 'Grafo' },
             ].map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setRightPanel(tab.id)}
-                className={`flex-1 py-2.5 text-xs font-semibold transition-colors ${
+                className={`flex-1 py-2.5 text-[10px] font-semibold transition-colors leading-tight px-1 ${
                   rightPanel === tab.id
                     ? 'text-indigo-600 dark:text-indigo-300 border-b-2 border-indigo-500 bg-gray-100 dark:bg-gray-800/40'
                     : 'text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
@@ -311,6 +315,19 @@ export default function VisualizerPage() {
             )}
             {rightPanel === 'pseudo' && (
               <PseudocodePanel algorithm={algorithm} algoState={algoState} />
+            )}
+            {rightPanel === 'connectivity' && (
+              <ConnectivityPanel
+                elements={currentElements}
+                isDirected={currentIsDirected}
+                onHighlight={setConnectivityHighlight}
+              />
+            )}
+            {rightPanel === 'representations' && (
+              <GraphRepresentationPanel
+                elements={currentElements}
+                isDirected={currentIsDirected}
+              />
             )}
           </div>
         </aside>

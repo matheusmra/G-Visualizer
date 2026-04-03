@@ -31,7 +31,7 @@ export const PRESETS = {
 
   cyclic: {
     name: 'Grafo com Ciclo',
-    description: 'Contém ciclos — ótimo para ver o controle de nós já visitados.',
+    description: 'Contém ciclos ótimo para ver o controle de nós já visitados.',
     elements: {
       nodes: [
         { data: { id: 'A', label: 'A' } },
@@ -57,7 +57,7 @@ export const PRESETS = {
 
   disconnected: {
     name: 'Grafo Desconexo',
-    description: 'Dois componentes separados — a travessia só cobre um deles.',
+    description: 'Dois componentes separados a travessia só cobre um deles.',
     elements: {
       nodes: [
         { data: { id: 'P', label: 'P' } },
@@ -79,8 +79,8 @@ export const PRESETS = {
   },
 
   directed: {
-    name: 'Grafo Dirigido',
-    description: 'Dois ciclos dirigidos — ideal para FTD e FTI. Note a diferença de alcançabilidade.',
+    name: 'Grafo Direcionado',
+    description: 'Dois ciclos direcionados ideal para FTD e FTI. Note a diferença de alcançabilidade.',
     directed: true,
     elements: {
       nodes: [
@@ -108,7 +108,7 @@ export const PRESETS = {
 
   linear: {
     name: 'Lista Linear',
-    description: 'Sequência em linha — como uma lista encadeada. BFS e DFS se comportam de forma idêntica.',
+    description: 'Sequência em linha como uma lista encadeada. BFS e DFS se comportam de forma idêntica.',
     elements: {
       nodes: [
         { data: { id: 'A', label: 'A' } },
@@ -131,7 +131,7 @@ export const PRESETS = {
 
   complete: {
     name: 'Grafo Completo K₅',
-    description: 'Todos os nós conectados entre si — todos os vizinhos são enfileirados de uma vez.',
+    description: 'Todos os nós conectados entre si todos os vizinhos são enfileirados de uma vez.',
     elements: {
       nodes: [
         { data: { id: 'A', label: 'A' } },

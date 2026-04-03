@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react';
 import cytoscape from 'cytoscape';
+import { COMPONENT_COLORS } from '../algorithms/connectivity.js';
 
 const C = {
   unvisited:  { bg: '#1e293b', border: '#475569', text: '#94a3b8' },
@@ -53,6 +54,19 @@ function buildStylesheet(isDirected) {
         'width': 3,
       },
     },
+    // connectivity highlight classes
+    ...COMPONENT_COLORS.map((c, i) => ({
+      selector: `node.comp-${i}`,
+      style: { 'background-color': c.bg, 'border-color': c.border, 'color': c.text, 'border-width': 2 },
+    })),
+    {
+      selector: 'node.ap',
+      style: { 'border-color': '#f97316', 'border-width': 5 },
+    },
+    {
+      selector: 'edge.bridge',
+      style: { 'line-color': '#ef4444', 'target-arrow-color': '#ef4444', 'width': 4 },
+    },
   ];
 }
 
@@ -86,6 +100,7 @@ export default function GraphCanvas({
   editMode,
   isDirected,
   onGraphChange,
+  connectivityHighlight, // { componentMap, bridgeIds, apIds } | null
 }) {
   const containerRef = useRef(null);
   const cyRef       = useRef(null);
@@ -169,6 +184,32 @@ export default function GraphCanvas({
 
     return () => { cy.off('tap'); };
   }, [editMode, onGraphChange]);
+
+  // ── Apply connectivity highlight ─────────────────────────────────────────
+  useEffect(() => {
+    const cy = cyRef.current;
+    if (!cy) return;
+
+    // Clear all connectivity classes
+    cy.nodes().forEach(node => {
+      for (let i = 0; i < COMPONENT_COLORS.length; i++) node.removeClass(`comp-${i}`);
+      node.removeClass('ap');
+    });
+    cy.edges().removeClass('bridge');
+
+    if (!connectivityHighlight) return;
+
+    const { componentMap, bridgeIds, apIds } = connectivityHighlight;
+    cy.nodes().forEach(node => {
+      const id = node.id();
+      const idx = componentMap[id];
+      if (idx !== undefined) node.addClass(`comp-${idx % COMPONENT_COLORS.length}`);
+      if (apIds.has(id)) node.addClass('ap');
+    });
+    cy.edges().forEach(edge => {
+      if (bridgeIds.has(edge.id())) edge.addClass('bridge');
+    });
+  }, [connectivityHighlight]);
 
   // ── Apply algorithm visual state ──────────────────────────────────────────
   useEffect(() => {

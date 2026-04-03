@@ -23,7 +23,7 @@ const ALGO_CARDS = [
     id: 'FTD',
     name: 'Fecho Transitivo Direto',
     abbr: 'FTD',
-    description: 'Encontra todos os nós alcançáveis a partir de uma origem seguindo as arestas de saída do grafo dirigido.',
+    description: 'Encontra todos os nós alcançáveis a partir de uma origem seguindo as arestas de saída do grafo direcionado.',
     complexity: { time: 'O(V + E)', space: 'O(V)' },
     bestFor: ['Alcançabilidade', 'Dependências', 'Grafos dirigidos'],
   },
