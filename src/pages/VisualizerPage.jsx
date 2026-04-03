@@ -214,7 +214,7 @@ export default function VisualizerPage() {
       <header className="border-b border-gray-200 dark:border-gray-800 px-6 py-3 flex items-center gap-4">
         <Link
           to="/"
-          className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors text-sm"
+          className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors text-sm"
         >
           <span>←</span>
           <span className="hidden sm:inline">Início</span>
@@ -300,7 +300,7 @@ export default function VisualizerPage() {
                 className={`flex-1 py-2.5 text-[10px] font-semibold transition-colors leading-tight px-1 ${
                   rightPanel === tab.id
                     ? 'text-indigo-600 dark:text-indigo-300 border-b-2 border-indigo-500 bg-gray-100 dark:bg-gray-800/40'
-                    : 'text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                    : 'text-gray-600 dark:text-gray-500 hover:text-gray-800 dark:hover:text-gray-300'
                 }`}
               >
                 {tab.label}
@@ -351,7 +351,7 @@ function Legend() {
       {items.map(({ color, label }) => (
         <div key={label} className="flex items-center gap-1.5">
           <span className={`w-3 h-3 rounded-full border-2 ${color}`} />
-          <span className="text-xs text-gray-500 dark:text-gray-400">{label}</span>
+          <span className="text-xs text-gray-600 dark:text-gray-400">{label}</span>
         </div>
       ))}
     </div>
@@ -363,7 +363,7 @@ function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="px-3 py-1 rounded-lg border border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+      className="px-3 py-1 rounded-lg border border-gray-200 dark:border-gray-700 text-xs text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
     >
       {theme === 'dark' ? 'Claro' : 'Escuro'}
     </button>

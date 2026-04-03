@@ -39,7 +39,7 @@ function ToastItem({ toast, onDismiss }) {
         </div>
         <button
           onClick={() => onDismiss(toast.id)}
-          className="shrink-0 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors leading-none text-base mt-0.5"
+          className="shrink-0 text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 transition-colors leading-none text-base mt-0.5"
           aria-label="Fechar"
         >
           &times;

@@ -67,13 +67,13 @@ export default function HomePage() {
         <h1 className="text-4xl font-black text-gray-900 dark:text-gray-50 leading-tight">
           Visualize algoritmos de<br className="hidden sm:block" /> grafos passo a passo
         </h1>
-        <p className="max-w-lg text-gray-500 dark:text-gray-400 text-base leading-relaxed">
+        <p className="max-w-lg text-gray-700 dark:text-gray-400 text-base leading-relaxed">
           Aprenda BFS, DFS, Fecho Transitivo Direto e Indireto com execução interativa,
           estruturas de dados em tempo real e pseudocódigo destacado.
         </p>
         <div className="flex flex-wrap justify-center gap-2 mt-1">
           {['Execução passo a passo', 'Histórico navegável', 'Pseudocódigo', 'Editor de grafos'].map(f => (
-            <span key={f} className="px-3 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 rounded-full text-xs">
+            <span key={f} className="px-3 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 rounded-full text-xs">
               {f}
             </span>
           ))}
@@ -99,19 +99,19 @@ export default function HomePage() {
                     </span>
                     <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">{card.name}</h3>
                   </div>
-                  <span className="text-gray-300 dark:text-gray-700 group-hover:text-indigo-400 dark:group-hover:text-indigo-500 transition-colors text-lg leading-none mt-0.5">›</span>
+                  <span className="text-gray-400 dark:text-gray-700 group-hover:text-indigo-400 dark:group-hover:text-indigo-500 transition-colors text-lg leading-none mt-0.5">›</span>
                 </div>
 
-                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed mb-3">{card.description}</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed mb-3">{card.description}</p>
 
-                <div className="flex gap-4 text-xs text-gray-400 dark:text-gray-500 mb-3">
+                <div className="flex gap-4 text-xs text-gray-600 dark:text-gray-500 mb-3">
                   <span>Tempo: <code className="text-gray-700 dark:text-gray-300">{card.complexity.time}</code></span>
                   <span>Espaço: <code className="text-gray-700 dark:text-gray-300">{card.complexity.space}</code></span>
                 </div>
 
                 <div className="flex flex-wrap gap-1.5">
                   {card.bestFor.map(tag => (
-                    <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700">
+                    <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700">
                       {tag}
                     </span>
                   ))}
@@ -128,7 +128,7 @@ export default function HomePage() {
         {/* Biblioteca de grafos */}
         <section>
           <SectionTitle>Biblioteca de Grafos</SectionTitle>
-          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 mb-4">
+          <p className="text-xs text-gray-600 dark:text-gray-500 mt-1 mb-4">
             Grafos prontos para usar. Clique em qualquer um para abrir no visualizador.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
@@ -141,13 +141,13 @@ export default function HomePage() {
                 <div className="flex items-start justify-between mb-1">
                   <span className="font-semibold text-gray-800 dark:text-gray-200 text-sm">{p.name}</span>
                   {p.directed && (
-                    <span className="text-[10px] font-semibold bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 px-1.5 py-0.5 rounded-full ml-2 shrink-0">
+                    <span className="text-[10px] font-semibold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 px-1.5 py-0.5 rounded-full ml-2 shrink-0">
                       dirigido
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-gray-400 dark:text-gray-500 leading-relaxed">{p.description}</p>
-                <div className="flex gap-2 mt-2 text-xs text-gray-400 dark:text-gray-600">
+                <p className="text-xs text-gray-600 dark:text-gray-500 leading-relaxed">{p.description}</p>
+                <div className="flex gap-2 mt-2 text-xs text-gray-500 dark:text-gray-600">
                   <span>{p.nodeCount} nós</span>
                   <span>·</span>
                   <span>{p.edgeCount} arestas</span>
@@ -160,7 +160,7 @@ export default function HomePage() {
               className="text-left rounded-xl border border-dashed border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-indigo-400 dark:hover:border-indigo-600 p-4 transition-all"
             >
               <span className="font-semibold text-gray-700 dark:text-gray-300 text-sm block mb-1">Grafo Customizado</span>
-              <p className="text-xs text-gray-400 dark:text-gray-500 leading-relaxed">
+              <p className="text-xs text-gray-600 dark:text-gray-500 leading-relaxed">
                 Construa seu próprio grafo: adicione nós, conecte arestas e defina se é dirigido.
               </p>
             </button>
@@ -177,11 +177,11 @@ export default function HomePage() {
               { n: '3', title: 'Execute passo a passo', text: 'Clique em Passo para avançar uma iteração, use Play para animação automática ou Voltar para rever.' },
             ].map(step => (
               <div key={step.n} className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-4">
-                <div className="w-7 h-7 rounded-full border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-bold text-sm flex items-center justify-center mb-3">
+                <div className="w-7 h-7 rounded-full border border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-400 font-bold text-sm flex items-center justify-center mb-3">
                   {step.n}
                 </div>
                 <h4 className="font-semibold text-gray-800 dark:text-gray-200 text-sm mb-1">{step.title}</h4>
-                <p className="text-xs text-gray-500 dark:text-gray-500 leading-relaxed">{step.text}</p>
+                <p className="text-xs text-gray-700 dark:text-gray-400 leading-relaxed">{step.text}</p>
               </div>
             ))}
           </div>
@@ -194,7 +194,7 @@ export default function HomePage() {
               <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
                 Powered by Open Source
               </h2>
-              <p className="max-w-lg text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+              <p className="max-w-lg text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                 G Visualizer é um projeto educacional de código aberto. Contribua com novos algoritmos,
                 grafos ou melhorias de interface, toda ajuda é bem-vinda.
               </p>
@@ -208,7 +208,7 @@ export default function HomePage() {
               ].map(f => (
                 <div key={f.title} className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-4 text-left">
                   <h3 className="text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 mb-1">{f.title}</h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{f.text}</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{f.text}</p>
                 </div>
               ))}
             </div>
@@ -223,7 +223,7 @@ export default function HomePage() {
                 <GitHubIcon />
                 Ver no GitHub
               </a>
-              <div className="flex flex-wrap justify-center gap-4 text-xs text-gray-400 dark:text-gray-500">
+              <div className="flex flex-wrap justify-center gap-4 text-xs text-gray-600 dark:text-gray-500">
                 <span>React + Vite</span>
                 <span>·</span>
                 <span>Cytoscape.js</span>
@@ -233,7 +233,7 @@ export default function HomePage() {
                 <span>Código aberto</span>
               </div>
               <div className="w-full border-t border-gray-200 dark:border-gray-700 pt-4 text-center">
-                <span className="text-xs text-gray-400 dark:text-gray-500">Feito por Matheus</span>
+                <span className="text-xs text-gray-600 dark:text-gray-500">Feito por Matheus</span>
               </div>
             </div>
           </div>
@@ -246,7 +246,7 @@ export default function HomePage() {
 
 function SectionTitle({ children }) {
   return (
-    <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">
+    <h2 className="text-xs font-bold uppercase tracking-widest text-gray-600 dark:text-gray-500">
       {children}
     </h2>
   );
@@ -264,7 +264,7 @@ function ThemeToggle({ theme, onToggle }) {
   return (
     <button
       onClick={onToggle}
-      className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+      className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 text-xs text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
     >
       {theme === 'dark' ? 'Modo Claro' : 'Modo Escuro'}
     </button>

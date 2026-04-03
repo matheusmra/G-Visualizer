@@ -35,7 +35,7 @@ export default function ControlDeck({
 
       {/* Traversal group */}
       <div className="flex items-center gap-1">
-        <span className="text-xs text-gray-400 dark:text-gray-500 mr-1 hidden sm:block">Travessia</span>
+        <span className="text-xs text-gray-600 dark:text-gray-500 mr-1 hidden sm:block">Travessia</span>
         <div className="flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
           {TRAVERSAL_ALGOS.map(alg => (
             <button
@@ -45,7 +45,7 @@ export default function ControlDeck({
               className={`px-3 py-1.5 text-sm font-bold transition-colors ${
                 algorithm === alg
                   ? 'bg-indigo-600 text-white'
-                  : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
               }`}
             >
               {alg}
@@ -54,9 +54,9 @@ export default function ControlDeck({
         </div>
       </div>
 
-      {/* Closure group */}
+      {/* Closure group */
       <div className="flex items-center gap-1">
-        <span className="text-xs text-gray-400 dark:text-gray-500 mr-1 hidden sm:block">Fecho</span>
+        <span className="text-xs text-gray-600 dark:text-gray-500 mr-1 hidden sm:block">Fecho</span>
         <div className="flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
           {CLOSURE_ALGOS.map(alg => (
             <button
@@ -66,7 +66,7 @@ export default function ControlDeck({
               className={`px-3 py-1.5 text-sm font-bold transition-colors ${
                 algorithm === alg
                   ? 'bg-indigo-600 text-white'
-                  : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
               }`}
             >
               {alg}
@@ -75,10 +75,10 @@ export default function ControlDeck({
         </div>
       </div>
 
-      {/* Start node */}
+      {/* Start node */
       {nodeIds.length > 0 && (
         <div className="flex items-center gap-2">
-          <label className="text-xs text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">Nó inicial</label>
+          <label className="text-xs text-gray-700 dark:text-gray-400 font-medium whitespace-nowrap">Nó inicial</label>
           <select
             value={startNode}
             onChange={e => setStartNode(e.target.value)}
@@ -150,7 +150,7 @@ export default function ControlDeck({
 
       {/* Speed */}
       <div className="flex items-center gap-2 ml-auto">
-        <label className="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">Velocidade</label>
+        <label className="text-xs text-gray-600 dark:text-gray-500 whitespace-nowrap">Velocidade</label>
         <input
           type="range"
           min={100}
@@ -161,7 +161,7 @@ export default function ControlDeck({
           className="w-24 accent-indigo-600"
           title={`${speed}ms por passo`}
         />
-        <span className="text-xs text-gray-400 dark:text-gray-500 w-12">{speed}ms</span>
+        <span className="text-xs text-gray-600 dark:text-gray-500 w-12">{speed}ms</span>
       </div>
 
       {/* Done badge */}
@@ -173,7 +173,7 @@ export default function ControlDeck({
 
       {/* Empty graph hint */}
       {nodeIds.length === 0 && (
-        <span className="text-xs text-gray-400 dark:text-gray-500 italic">Adicione nós para começar.</span>
+        <span className="text-xs text-gray-600 dark:text-gray-500 italic">Adicione nós para começar.</span>
       )}
     </div>
   );

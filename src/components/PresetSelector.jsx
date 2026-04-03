@@ -19,7 +19,7 @@ export default function PresetSelector({ current, onChange }) {
         >
           {preset.name}
           {preset.directed && (
-            <span className="ml-1 text-[10px] text-sky-400 font-normal">dirigido</span>
+            <span className="ml-1 text-[10px] text-sky-400 font-normal">direcionado</span>
           )}
         </button>
       ))}

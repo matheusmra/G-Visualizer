@@ -80,7 +80,7 @@ export default function DataPanel({ algorithm, algoState }) {
                 <span className="text-sm font-mono font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-100 dark:bg-indigo-900/50 px-2 py-0.5 rounded">
                   {id}
                 </span>
-                {i < order.length - 1 && <span className="text-gray-400 dark:text-gray-500 text-xs">→</span>}
+                {i < order.length - 1 && <span className="text-gray-500 dark:text-gray-500 text-xs">→</span>}
               </span>
             ))}
           </div>
@@ -96,7 +96,7 @@ export default function DataPanel({ algorithm, algoState }) {
       {/* Step log */}
       {algoState.stepLog && (
         <div className="mt-auto pt-2 border-t border-gray-200 dark:border-gray-700">
-          <p className="text-xs text-gray-500 dark:text-gray-400 italic leading-relaxed">{algoState.stepLog}</p>
+          <p className="text-xs text-gray-600 dark:text-gray-400 italic leading-relaxed">{algoState.stepLog}</p>
         </div>
       )}
     </div>
@@ -128,7 +128,7 @@ function PanelSection({ title, children, highlight }) {
         ? 'bg-green-50 dark:bg-green-950/30 border-green-300 dark:border-green-700/50'
         : 'bg-gray-50 dark:bg-gray-800/60 border-gray-200 dark:border-gray-700/50'
     }`}>
-      <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-2">{title}</h3>
+      <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-600 dark:text-gray-400 mb-2">{title}</h3>
       {children}
     </div>
   );
@@ -148,6 +148,6 @@ function NodeTag({ label, color, badge }) {
 }
 
 function EmptyHint({ text }) {
-  return <p className="text-xs text-gray-400 dark:text-gray-500 italic">{text}</p>;
+  return <p className="text-xs text-gray-500 dark:text-gray-500 italic">{text}</p>;
 }
 

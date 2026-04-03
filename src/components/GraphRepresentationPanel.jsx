@@ -62,7 +62,7 @@ export default function GraphRepresentationPanel({ elements, isDirected }) {
 
   if (elements.nodes.length === 0) {
     return (
-      <p className="text-xs text-gray-400 dark:text-gray-500 italic">
+      <p className="text-xs text-gray-600 dark:text-gray-500 italic">
         Adicione nós ao grafo para ver as representações matemáticas.
       </p>
     );
@@ -80,7 +80,7 @@ export default function GraphRepresentationPanel({ elements, isDirected }) {
             className={`px-3 py-1.5 text-xs font-semibold rounded-lg text-left transition-colors ${
               view === v.id
                 ? 'bg-indigo-600 text-white'
-                : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
+                : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
             }`}
           >
             {v.label}
@@ -91,7 +91,7 @@ export default function GraphRepresentationPanel({ elements, isDirected }) {
       {/* Adjacency List */}
       {view === 'adj-list' && (
         <div>
-          <p className="text-[10px] text-gray-400 dark:text-gray-500 mb-2">
+          <p className="text-[10px] text-gray-600 dark:text-gray-500 mb-2">
             {isDirected ? 'Cada nó lista seus sucessores diretos.' : 'Cada nó lista seus vizinhos.'}
           </p>
           <div className="rounded-xl bg-gray-950 border border-gray-800 font-mono text-xs p-3 overflow-x-auto">
@@ -119,7 +119,7 @@ export default function GraphRepresentationPanel({ elements, isDirected }) {
       {/* Adjacency Matrix */}
       {view === 'adj-matrix' && (
         <div>
-          <p className="text-[10px] text-gray-400 dark:text-gray-500 mb-2">
+          <p className="text-[10px] text-gray-600 dark:text-gray-500 mb-2">
             {adjMatrix.nodes.length}×{adjMatrix.nodes.length} — 1 se existe aresta, 0 caso contrário.
             {isDirected ? ' Linha = origem, coluna = destino.' : ''}
           </p>
@@ -160,7 +160,7 @@ export default function GraphRepresentationPanel({ elements, isDirected }) {
       {/* Incidence Matrix */}
       {view === 'inc-matrix' && (
         <div>
-          <p className="text-[10px] text-gray-400 dark:text-gray-500 mb-2">
+          <p className="text-[10px] text-gray-600 dark:text-gray-500 mb-2">
             {incMatrix.nodes.length}×{incMatrix.edges.length} —{' '}
             {isDirected
               ? '+1 saída, −1 entrada, 0 não incidente.'
