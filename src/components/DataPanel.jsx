@@ -77,17 +77,17 @@ export default function DataPanel({ algorithm, algoState }) {
           <div className="flex flex-wrap gap-1 items-center">
             {order.map((id, i) => (
               <span key={`${id}-${i}`} className="flex items-center gap-1">
-                <span className="text-sm font-mono font-bold text-violet-300 bg-violet-900/50 px-2 py-0.5 rounded">
+                <span className="text-sm font-mono font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-100 dark:bg-indigo-900/50 px-2 py-0.5 rounded">
                   {id}
                 </span>
-                {i < order.length - 1 && <span className="text-slate-500 text-xs">→</span>}
+                {i < order.length - 1 && <span className="text-gray-400 dark:text-gray-500 text-xs">→</span>}
               </span>
             ))}
           </div>
         )}
         {isClosure && algoState.done && (
-          <p className="text-xs text-green-400 mt-2 font-semibold">
-            ✓ Fecho completo: {order.length} nó{order.length !== 1 ? 's' : ''}
+          <p className="text-xs text-green-600 dark:text-green-400 mt-2 font-semibold">
+            Fecho completo: {order.length} nó{order.length !== 1 ? 's' : ''}
             {algorithm === 'FTD' ? ' alcançáveis' : ' predecessores'}
           </p>
         )}
@@ -95,8 +95,8 @@ export default function DataPanel({ algorithm, algoState }) {
 
       {/* Step log */}
       {algoState.stepLog && (
-        <div className="mt-auto pt-2 border-t border-slate-700">
-          <p className="text-xs text-slate-400 italic leading-relaxed">{algoState.stepLog}</p>
+        <div className="mt-auto pt-2 border-t border-gray-200 dark:border-gray-700">
+          <p className="text-xs text-gray-500 dark:text-gray-400 italic leading-relaxed">{algoState.stepLog}</p>
         </div>
       )}
     </div>
@@ -106,11 +106,7 @@ export default function DataPanel({ algorithm, algoState }) {
 // Small explanation card shown at top for closure algorithms
 function ClosureInfo({ algorithm }) {
   return (
-    <div className={`rounded-lg p-2.5 border text-xs leading-relaxed ${
-      algorithm === 'FTD'
-        ? 'bg-sky-950/40 border-sky-800/40 text-sky-300'
-        : 'bg-purple-950/40 border-purple-800/40 text-purple-300'
-    }`}>
+    <div className="rounded-lg p-2.5 border text-xs leading-relaxed bg-gray-100 dark:bg-gray-800/60 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400">
       {algorithm === 'FTD'
         ? <>
             <span className="font-bold">Fecho Transitivo Direto</span> — encontra todos os nós
@@ -129,10 +125,10 @@ function PanelSection({ title, children, highlight }) {
   return (
     <div className={`rounded-lg p-3 border transition-colors ${
       highlight
-        ? 'bg-green-950/30 border-green-700/50'
-        : 'bg-slate-800/60 border-slate-700/50'
+        ? 'bg-green-50 dark:bg-green-950/30 border-green-300 dark:border-green-700/50'
+        : 'bg-gray-50 dark:bg-gray-800/60 border-gray-200 dark:border-gray-700/50'
     }`}>
-      <h3 className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-2">{title}</h3>
+      <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-2">{title}</h3>
       {children}
     </div>
   );
@@ -140,8 +136,8 @@ function PanelSection({ title, children, highlight }) {
 
 function NodeTag({ label, color, badge }) {
   const cls = {
-    amber: 'bg-amber-900/60 text-amber-200 border-amber-600/50',
-    green: 'bg-green-900/60 text-green-200 border-green-600/50',
+    amber: 'bg-amber-50 dark:bg-amber-900/60 text-amber-700 dark:text-amber-200 border-amber-200 dark:border-amber-600/50',
+    green: 'bg-green-50 dark:bg-green-900/60 text-green-700 dark:text-green-200 border-green-200 dark:border-green-600/50',
   }[color];
   return (
     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded border font-mono text-sm font-bold ${cls}`}>
@@ -152,6 +148,6 @@ function NodeTag({ label, color, badge }) {
 }
 
 function EmptyHint({ text }) {
-  return <p className="text-xs text-slate-500 italic">{text}</p>;
+  return <p className="text-xs text-gray-400 dark:text-gray-500 italic">{text}</p>;
 }
 

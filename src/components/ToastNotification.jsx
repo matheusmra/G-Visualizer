@@ -1,24 +1,17 @@
-import { useEffect } from 'react';
+﻿import { useEffect } from 'react';
 
-const ICONS = {
-  success: '✓',
-  warning: '⚠',
-  info:    'ℹ',
-  error:   '✕',
+const ACCENT = {
+  success: 'bg-green-500',
+  warning: 'bg-amber-500',
+  info:    'bg-gray-400 dark:bg-gray-500',
+  error:   'bg-red-500',
 };
 
-const STYLES = {
-  success: 'bg-green-900/90 border-green-600/60 text-green-100',
-  warning: 'bg-amber-900/90 border-amber-600/60 text-amber-100',
-  info:    'bg-slate-800/95 border-slate-600/60 text-slate-200',
-  error:   'bg-red-900/90 border-red-600/60 text-red-100',
-};
-
-const ICON_STYLES = {
-  success: 'text-green-400',
-  warning: 'text-amber-400',
-  info:    'text-slate-400',
-  error:   'text-red-400',
+const TITLE_COLOR = {
+  success: 'text-green-700 dark:text-green-400',
+  warning: 'text-amber-700 dark:text-amber-400',
+  info:    'text-gray-600 dark:text-gray-400',
+  error:   'text-red-700 dark:text-red-400',
 };
 
 function ToastItem({ toast, onDismiss }) {
@@ -30,36 +23,28 @@ function ToastItem({ toast, onDismiss }) {
   const type = toast.type ?? 'info';
 
   return (
-    <div
-      className={`
-        flex items-start gap-3 p-3 rounded-xl border shadow-2xl
-        max-w-sm w-full animate-in slide-in-from-left-2 fade-in
-        ${STYLES[type] ?? STYLES.info}
-      `}
-    >
-      {/* Icon */}
-      <span className={`text-xl font-bold shrink-0 mt-0.5 ${ICON_STYLES[type]}`}>
-        {ICONS[type]}
-      </span>
+    <div className="flex rounded-xl border border-gray-200 dark:border-gray-800 shadow-xl max-w-sm w-full bg-white dark:bg-gray-900 overflow-hidden">
+      {/* Colored left accent */}
+      <div className={`w-1 shrink-0 ${ACCENT[type] ?? ACCENT.info}`} />
 
-      {/* Message */}
-      <div className="flex-1 min-w-0">
-        {toast.title && (
-          <p className="text-xs font-bold uppercase tracking-wide opacity-80 mb-0.5">
-            {toast.title}
-          </p>
-        )}
-        <p className="text-sm leading-relaxed break-words">{toast.message}</p>
+      {/* Content */}
+      <div className="flex items-start gap-3 p-3 flex-1 min-w-0">
+        <div className="flex-1 min-w-0">
+          {toast.title && (
+            <p className={`text-xs font-bold mb-0.5 ${TITLE_COLOR[type]}`}>
+              {toast.title}
+            </p>
+          )}
+          <p className="text-sm leading-relaxed break-words text-gray-600 dark:text-gray-300">{toast.message}</p>
+        </div>
+        <button
+          onClick={() => onDismiss(toast.id)}
+          className="shrink-0 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors leading-none text-base mt-0.5"
+          aria-label="Fechar"
+        >
+          &times;
+        </button>
       </div>
-
-      {/* Dismiss */}
-      <button
-        onClick={() => onDismiss(toast.id)}
-        className="shrink-0 opacity-50 hover:opacity-100 transition-opacity text-sm mt-0.5"
-        aria-label="Fechar"
-      >
-        ✕
-      </button>
     </div>
   );
 }
@@ -68,7 +53,7 @@ export function ToastContainer({ toasts, onDismiss }) {
   if (toasts.length === 0) return null;
 
   return (
-    <div className="fixed bottom-20 left-4 z-50 flex flex-col-reverse gap-2 pointer-events-none">
+    <div className="fixed bottom-4 left-4 z-50 flex flex-col-reverse gap-2 pointer-events-none">
       {toasts.map(t => (
         <div key={t.id} className="pointer-events-auto">
           <ToastItem toast={t} onDismiss={onDismiss} />
@@ -77,3 +62,5 @@ export function ToastContainer({ toasts, onDismiss }) {
     </div>
   );
 }
+
+

@@ -1,11 +1,8 @@
 /**
  * Fecho Transitivo Direto (FTD) e Fecho Transitivo Indireto (FTI).
  *
- * Ambos usam BFS internamente sobre mapas de adjacência diferentes:
- *   FTD  → adjMap dirigido  (arestas de saída u→v)
- *   FTI  → adjMap invertido (arestas de entrada, tratadas como saída em grafo inverso)
- *
- * Para grafos não-dirigidos, FTD e FTI equivalem ao componente conexo (mesma que BFS).
+ * FTD → BFS sobre o adjMap dirigido  (arestas de saída u→v)
+ * FTI → BFS sobre o adjMap invertido (arestas de entrada como saída)
  */
 
 import { stepBFS } from './BFS.js';
@@ -28,10 +25,8 @@ export function initFTD(startNode) {
   };
 }
 
-/** Avança um passo do FTD usando o adjMap dirigido. */
 export function stepFTD(state, adjMap) {
   const next = stepBFS(state, adjMap);
-  // Para FTD/FTI não emitimos 'done_unreachable' (é comportamento esperado)
   if (next.eventType === 'done_unreachable') {
     const count = next.visited?.size ?? 0;
     return {
@@ -40,7 +35,6 @@ export function stepFTD(state, adjMap) {
       stepLog: `Fecho Transitivo Direto calculado: ${count} nó(s) alcançável(is) a partir da origem.`,
     };
   }
-  // Adapt logs for FTD
   return { ...next, stepLog: next.stepLog.replace(/^BFS/, 'FTD') };
 }
 
@@ -62,7 +56,6 @@ export function initFTI(startNode) {
   };
 }
 
-/** Avança um passo do FTI usando o adjMap invertido. */
 export function stepFTI(state, reverseMap) {
   const next = stepBFS(state, reverseMap);
   if (next.eventType === 'done_unreachable') {
@@ -101,4 +94,3 @@ export function buildReverseAdjMap(elements) {
   }
   return adj;
 }
-
