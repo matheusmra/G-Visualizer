@@ -1,69 +1,87 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext.jsx';
-import GraphCanvas from '../components/GraphCanvas.jsx';
-import GraphBuilder from '../components/GraphBuilder.jsx';
-import DataPanel from '../components/DataPanel.jsx';
-import PseudocodePanel from '../components/PseudocodePanel.jsx';
-import ControlDeck from '../components/ControlDeck.jsx';
-import { ToastContainer } from '../components/ToastNotification.jsx';
-import ConnectivityPanel from '../components/ConnectivityPanel.jsx';
-import GraphRepresentationPanel from '../components/GraphRepresentationPanel.jsx';
-import { PRESETS } from '../data/presets.js';
-import { initBFS, stepBFS, buildAdjMap } from '../algorithms/BFS.js';
-import { initDFS, stepDFS } from '../algorithms/DFS.js';
-import {
-  initFTD, stepFTD,
-  initFTI, stepFTI,
-  buildDirectedAdjMap,
-  buildReverseAdjMap,
-} from '../algorithms/FTC.js';
+import GraphCanvas from '../components/canvas/GraphCanvas.jsx';
+import GraphBuilder from '../components/controls/GraphBuilder.jsx';
+import DataPanel from '../components/panels/DataPanel.jsx';
+import PseudocodePanel from '../components/panels/PseudocodePanel.jsx';
+import ControlDeck from '../components/controls/ControlDeck.jsx';
+import { ToastContainer } from '../components/ui/ToastNotification.jsx';
+import ConnectivityPanel from '../components/panels/ConnectivityPanel.jsx';
+import GraphRepresentationPanel from '../components/panels/GraphRepresentationPanel.jsx';
+import { useAlgorithm } from '../hooks/useAlgorithm.js';
+import { usePlayback } from '../hooks/usePlayback.js';
+import { useGraphPreset } from '../hooks/useGraphPreset.js';
+import { buildAdjMap, buildDirectedAdjMap, buildReverseAdjMap } from '../utils/graphHelpers.js';
+import { ALGO_IDS } from '../constants/algorithms.js';
 
-const DEFAULT_SPEED = 700;
-const EMPTY_GRAPH   = { nodes: [], edges: [] };
 let toastId = 0;
 
 export default function VisualizerPage() {
   const { algorithm: algoParam }        = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // ── Fonte do grafo ────────────────────────────────────────────────────────
-  const initialPreset = searchParams.get('preset') ?? 'cyclic';
-  const [presetKey,      setPresetKey]      = useState(initialPreset);
-  const [customElements, setCustomElements] = useState(EMPTY_GRAPH);
-  const [isDirected,     setIsDirected]     = useState(false);
-  const [editMode,       setEditMode]       = useState(null);
-
-  // ── Algoritmo ─────────────────────────────────────────────────────────────
-  const validAlgos = ['BFS', 'DFS', 'FTD', 'FTI'];
-  const [algorithm,  setAlgorithm]  = useState(
-    validAlgos.includes(algoParam) ? algoParam : 'BFS'
+  // ── Algorithm selector ────────────────────────────────────────────────────
+  const [algorithm, setAlgorithm] = useState(
+    ALGO_IDS.includes(algoParam) ? algoParam : 'BFS'
   );
-  const [startNode,  setStartNode]  = useState('');
-  const [algoState,  setAlgoState]  = useState(null);
-  const [history,    setHistory]    = useState([]);
-  const [isPlaying,  setIsPlaying]  = useState(false);
-  const [speed,      setSpeed]      = useState(DEFAULT_SPEED);
-  const playTimerRef = useRef(null);
-  const skipShownRef = useRef(false);
+  const [startNode, setStartNode] = useState('');
+
+  // ── Graph preset / custom graph ───────────────────────────────────────────
+  const {
+    presetKey, setPresetKey,
+    customElements,
+    isDirected, setIsDirected,
+    editMode, setEditMode,
+    isCustom, currentElements, currentLayout, currentIsDirected,
+    nodeIds, handleGraphChange, handleClearGraph,
+  } = useGraphPreset(searchParams.get('preset') ?? 'cyclic', setSearchParams);
+
+  // ── Adjacency maps (derived) ──────────────────────────────────────────────
+  const adjMap = useMemo(
+    () => currentIsDirected ? buildDirectedAdjMap(currentElements) : buildAdjMap(currentElements),
+    [currentElements, currentIsDirected],
+  );
+  const reverseMap     = useMemo(() => buildReverseAdjMap(currentElements),   [currentElements]);
+  const directedAdjMap = useMemo(() => buildDirectedAdjMap(currentElements),  [currentElements]);
+
+  // ── Algorithm execution ───────────────────────────────────────────────────
+  const {
+    algoState, history,
+    start, stepForward, stepBackward, reset,
+    tickForInterval, skipShownRef,
+  } = useAlgorithm(algorithm, adjMap, reverseMap, directedAdjMap);
+
+  // ── Playback ──────────────────────────────────────────────────────────────
+  const { isPlaying, setIsPlaying, play, pause, speed, setSpeed, setTickFn } = usePlayback();
+
+  // Keep the interval's tick function up to date
+  useEffect(() => {
+    setTickFn(() => tickForInterval(() => setIsPlaying(false)));
+  }, [tickForInterval, setTickFn, setIsPlaying]);
+
+  // ── Coordination: reset on preset or algorithm change ────────────────────
+  useEffect(() => {
+    pause();
+    reset();
+    setStartNode(nodeIds[0] ?? '');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [presetKey]);
+
+  useEffect(() => {
+    pause();
+    reset();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [algorithm]);
 
   // ── UI ────────────────────────────────────────────────────────────────────
   const [rightPanel, setRightPanel] = useState('data');
-  const [toasts,     setToasts]     = useState([]);  const [connectivityHighlight, setConnectivityHighlight] = useState(null);
-  // ── Derivados ─────────────────────────────────────────────────────────────
-  const isCustom          = presetKey === 'custom';
-  const preset            = isCustom ? null : PRESETS[presetKey];
-  const currentElements   = isCustom ? customElements : preset.elements;
-  const currentLayout     = isCustom ? { name: 'preset' } : preset.layout;
-  const currentIsDirected = isCustom ? isDirected : (preset?.directed ?? false);
-  const nodeIds           = currentElements.nodes.map(n => n.data.id);
+  const [toasts,     setToasts]     = useState([]);
+  const [connectivityHighlight, setConnectivityHighlight] = useState(null);
 
-  const adjMap     = currentIsDirected
-    ? buildDirectedAdjMap(currentElements)
-    : buildAdjMap(currentElements);
-  const reverseMap = buildReverseAdjMap(currentElements);
+  const handleReset = useCallback(() => { pause(); reset(); }, [pause, reset]);
 
-  // ── Grau de cada vértice ──────────────────────────────────────────────────
+  // ── Degree-enriched elements (for canvas labels) ──────────────────────────
   const enrichedElements = useMemo(() => {
     const outDeg = {}, inDeg = {};
     currentElements.nodes.forEach(n => { outDeg[n.data.id] = 0; inDeg[n.data.id] = 0; });
@@ -93,88 +111,7 @@ export default function VisualizerPage() {
     setToasts(t => t.filter(x => x.id !== id));
   }, []);
 
-  // ── Reset ─────────────────────────────────────────────────────────────────
-  const handleReset = useCallback(() => {
-    clearInterval(playTimerRef.current);
-    setIsPlaying(false);
-    setAlgoState(null);
-    setHistory([]);
-    skipShownRef.current = false;
-  }, []);
-
-  useEffect(() => {
-    const ids = preset ? preset.elements.nodes.map(n => n.data.id) : [];
-    setStartNode(ids[0] ?? '');
-    handleReset();
-    setEditMode(null);
-    // sync URL preset param
-    setSearchParams(prev => {
-      const next = new URLSearchParams(prev);
-      next.set('preset', presetKey);
-      return next;
-    });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [presetKey]);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { handleReset(); }, [algorithm]);
-
-  // ── Avançar algoritmo ─────────────────────────────────────────────────────
-  const handleStart = useCallback(() => {
-    const node = startNode || nodeIds[0];
-    if (!node) return;
-    let state;
-    if      (algorithm === 'BFS') state = initBFS(node);
-    else if (algorithm === 'DFS') state = initDFS(node);
-    else if (algorithm === 'FTD') state = initFTD(node);
-    else if (algorithm === 'FTI') state = initFTI(node);
-    setAlgoState(state);
-    setHistory([]);
-    skipShownRef.current = false;
-  }, [startNode, nodeIds, algorithm]);
-
-  const advanceOne = useCallback(current => {
-    if (!current || current.done) return current;
-    if (algorithm === 'BFS') return stepBFS(current, adjMap);
-    if (algorithm === 'DFS') return stepDFS(current, adjMap);
-    if (algorithm === 'FTD') return stepFTD(current, adjMap);
-    if (algorithm === 'FTI') return stepFTI(current, reverseMap);
-    return current;
-  }, [algorithm, adjMap, reverseMap]);
-
-  const handleStepForward = useCallback(() => {
-    setHistory(h => [...h, algoState]);
-    setAlgoState(prev => advanceOne(prev));
-  }, [algoState, advanceOne]);
-
-  const handleStepBackward = useCallback(() => {
-    if (history.length === 0) return;
-    setAlgoState(history[history.length - 1]);
-    setHistory(h => h.slice(0, -1));
-  }, [history]);
-
-  // ── Auto-play ─────────────────────────────────────────────────────────────
-  useEffect(() => {
-    if (!isPlaying) { clearInterval(playTimerRef.current); return; }
-    clearInterval(playTimerRef.current);
-    playTimerRef.current = setInterval(() => {
-      setAlgoState(prev => {
-        if (!prev || prev.done) { setIsPlaying(false); return prev; }
-        const next = (() => {
-          if (algorithm === 'BFS') return stepBFS(prev, adjMap);
-          if (algorithm === 'DFS') return stepDFS(prev, adjMap);
-          if (algorithm === 'FTD') return stepFTD(prev, adjMap);
-          if (algorithm === 'FTI') return stepFTI(prev, reverseMap);
-          return prev;
-        })();
-        setHistory(h => [...h, prev]);
-        return next;
-      });
-    }, speed);
-    return () => clearInterval(playTimerRef.current);
-  }, [isPlaying, speed, algorithm, adjMap, reverseMap]);
-
-  // ── Toasts contextuais ────────────────────────────────────────────────────
+  // ── Contextual toasts ─────────────────────────────────────────────────────
   useEffect(() => {
     if (!algoState || algoState.eventType === 'init') return;
 
@@ -200,6 +137,15 @@ export default function VisualizerPage() {
       });
     }
 
+    if (eventType === 'done_cycle') {
+      addToast({
+        type:    'error',
+        title:   'Ciclo detectado',
+        message: `Ordenação topológica impossível — o grafo contém um ciclo. Apenas ${order?.length ?? 0} nó(s) foram ordenados.`,
+        duration: 8000,
+      });
+    }
+
     if (eventType === 'done') {
       const isClosure = algorithm === 'FTD' || algorithm === 'FTI';
       addToast({
@@ -207,25 +153,27 @@ export default function VisualizerPage() {
         title:   isClosure ? `${algorithm} calculado` : `${algorithm} concluída`,
         message: isClosure
           ? `Fecho calculado: ${visited?.size ?? 0} nó(s) no resultado.`
-          : `Travessia completa! Ordem de visita: ${order?.join(' → ')}.`,
+          : algorithm === 'TOPO'
+            ? `Ordenação topológica concluída! Ordem: ${order?.join(' → ')}.`
+            : `Travessia completa! Ordem de visita: ${order?.join(' → ')}.`,
         duration: 6000,
       });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [algoState?.stepCount, algoState?.done]);
 
-  // ── Grafo customizado ─────────────────────────────────────────────────────
-  const handleGraphChange = useCallback(newElements => {
-    setCustomElements(newElements);
-    handleReset();
-  }, [handleReset]);
+  // ── Custom graph actions (reset on change) ────────────────────────────────
+  const handleGraphChangeWithReset = useCallback(newElements => {
+    handleGraphChange(newElements);
+    reset();
+  }, [handleGraphChange, reset]);
 
-  const handleClearGraph = useCallback(() => {
-    setCustomElements(EMPTY_GRAPH);
-    handleReset();
-  }, [handleReset]);
+  const handleClearGraphWithReset = useCallback(() => {
+    handleClearGraph();
+    reset();
+  }, [handleClearGraph, reset]);
 
-  // ── Limpar destaque de conectividade quando o grafo muda ─────────────────
+  // ── Clear connectivity highlight when graph structure changes ─────────────
   const nodeIdsKey = nodeIds.join(',');
   useEffect(() => {
     setConnectivityHighlight(null);
@@ -261,15 +209,15 @@ export default function VisualizerPage() {
       <div className="border-b border-gray-200 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-900/60 px-4 py-3">
         <ControlDeck
           algorithm={algorithm}
-          setAlgorithm={alg => { setAlgorithm(alg); }}
+          setAlgorithm={setAlgorithm}
           startNode={startNode}
           setStartNode={setStartNode}
           nodeIds={nodeIds}
-          onStart={handleStart}
-          onStepForward={handleStepForward}
-          onStepBackward={handleStepBackward}
-          onPlay={() => { if (!algoState) handleStart(); setIsPlaying(true); }}
-          onPause={() => setIsPlaying(false)}
+          onStart={() => start(startNode || nodeIds[0])}
+          onStepForward={stepForward}
+          onStepBackward={stepBackward}
+          onPlay={() => { if (!algoState) start(startNode || nodeIds[0]); play(); }}
+          onPause={pause}
           onReset={handleReset}
           isPlaying={isPlaying}
           isDone={isDone}
@@ -287,7 +235,7 @@ export default function VisualizerPage() {
           setEditMode={setEditMode}
           isDirected={isDirected}
           setIsDirected={setIsDirected}
-          onClear={handleClearGraph}
+          onClear={handleClearGraphWithReset}
           nodeCount={customElements.nodes.length}
           edgeCount={customElements.edges.length}
         />
@@ -305,7 +253,7 @@ export default function VisualizerPage() {
             algorithm={algorithm}
             editMode={isCustom ? editMode : null}
             isDirected={currentIsDirected}
-            onGraphChange={handleGraphChange}
+            onGraphChange={handleGraphChangeWithReset}
             connectivityHighlight={connectivityHighlight}
           />
         </div>

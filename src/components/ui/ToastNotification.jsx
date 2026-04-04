@@ -1,4 +1,4 @@
-﻿import { useEffect } from 'react';
+import { useEffect } from 'react';
 
 const ACCENT = {
   success: 'bg-green-500',
@@ -62,5 +62,3 @@ export function ToastContainer({ toasts, onDismiss }) {
     </div>
   );
 }
-
-

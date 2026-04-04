@@ -2,8 +2,9 @@
 const LABELS = {
   BFS: { frontier: 'Queue',         visited: 'Visitados',          order: 'Ordem de Visita' },
   DFS: { frontier: 'Stack',         visited: 'Visitados',          order: 'Ordem de Visita' },
-  FTD: { frontier: 'Fila BFS',      visited: 'Alcançáveis',        order: 'Fecho Direto'    },
-  FTI: { frontier: 'Fila BFS',      visited: 'Predecessores',      order: 'Fecho Indireto'  },
+  FTD:  { frontier: 'Fila BFS',      visited: 'Alcançáveis',        order: 'Fecho Direto'       },
+  FTI:  { frontier: 'Fila BFS',      visited: 'Predecessores',      order: 'Fecho Indireto'     },
+  TOPO: { frontier: 'Fila (grau 0)', visited: 'Processados',        order: 'Ordem Topológica'   },
 };
 
 export default function DataPanel({ algorithm, algoState }) {
@@ -150,4 +151,3 @@ function NodeTag({ label, color, badge }) {
 function EmptyHint({ text }) {
   return <p className="text-xs text-gray-500 dark:text-gray-500 italic">{text}</p>;
 }
-

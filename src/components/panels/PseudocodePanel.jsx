@@ -1,78 +1,11 @@
 import { useEffect, useRef } from 'react';
+import { PSEUDOCODE } from '../../constants/pseudocode.js';
 
-// ── Pseudocódigo de cada algoritmo ────────────────────────────────────────────
-const PSEUDOCODE = {
-  BFS: {
-    title: 'Busca em Largura — BFS',
-    lines: [
-      'BFS(Grafo G, nó inicial s):',
-      '  marcar s como visitado',
-      '  Q ← fila vazia;  enfileirar(Q, s)',
-      '  enquanto Q ≠ ∅ faça:',
-      '    u ← desenfileirar(Q)',
-      '    para cada vizinho v de u:',
-      '      se v não foi visitado:',
-      '        marcar v como visitado',
-      '        enfileirar(Q, v)',
-      '  fim-enquanto  {retornar visitados}',
-    ],
-    description: 'Explora o grafo nível por nível. Garante o caminho mais curto em grafos não-ponderados.',
-  },
-  DFS: {
-    title: 'Busca em Profundidade — DFS',
-    lines: [
-      'DFS(Grafo G, nó inicial s):',
-      '  P ← pilha vazia;  empilhar(P, s)',
-      '  enquanto P ≠ ∅ faça:',
-      '    u ← desempilhar(P)',
-      '    se u não foi visitado:',
-      '      marcar u como visitado',
-      '      para cada vizinho v de u:',
-      '        se v não foi visitado:',
-      '          empilhar(P, v)',
-      '  fim-enquanto  {retornar visitados}',
-    ],
-    description: 'Explora o grafo mergulhando o mais fundo possível antes de retroceder.',
-  },
-  FTD: {
-    title: 'Fecho Transitivo Direto — FTD',
-    lines: [
-      'FTD(Grafo G, nó s):',
-      '  alcançáveis ← {s}',
-      '  Q ← fila vazia;  enfileirar(Q, s)',
-      '  enquanto Q ≠ ∅ faça:',
-      '    u ← desenfileirar(Q)',
-      '    para cada aresta u → v em G:',
-      '      se v ∉ alcançáveis:',
-      '        alcançáveis ← alcançáveis ∪ {v}',
-      '        enfileirar(Q, v)',
-      '  retornar alcançáveis',
-    ],
-    description: 'Encontra todos os nós que podem ser alcançados a partir de s seguindo arestas de saída.',
-  },
-  FTI: {
-    title: 'Fecho Transitivo Indireto — FTI',
-    lines: [
-      'FTI(Grafo G, nó s):',
-      '  predecessores ← {s}',
-      "  Q ← fila; enfileirar(Q, s); G' ← inverter(G)",
-      '  enquanto Q ≠ ∅ faça:',
-      '    u ← desenfileirar(Q)',
-      "    para cada aresta u → v em G':",
-      '      se v ∉ predecessores:',
-      '        predecessores ← predecessores ∪ {v}',
-      '        enfileirar(Q, v)',
-      '  retornar predecessores',
-    ],
-    description: 'Encontra todos os nós que possuem um caminho até s (executa BFS no grafo invertido).',
-  },
-};
-
-// Cores por tipo de evento
+// Colours per line state
 const LINE_CLASS = {
-  active:  'bg-indigo-100 dark:bg-indigo-700/70 text-indigo-900 dark:text-indigo-100 font-semibold',
-  normal:  'text-gray-600 dark:text-gray-400',
-  done:    'bg-green-100 dark:bg-green-800/50 text-green-800 dark:text-green-200 font-semibold',
+  active: 'bg-indigo-100 dark:bg-indigo-700/70 text-indigo-900 dark:text-indigo-100 font-semibold',
+  normal: 'text-gray-600 dark:text-gray-400',
+  done:   'bg-green-100 dark:bg-green-800/50 text-green-800 dark:text-green-200 font-semibold',
 };
 
 export default function PseudocodePanel({ algorithm, algoState }) {
@@ -91,12 +24,12 @@ export default function PseudocodePanel({ algorithm, algoState }) {
 
   return (
     <div className="flex flex-col gap-3">
-      {/* Descrição do algoritmo */}
+      {/* Algorithm description */}
       <div className="rounded-lg p-3 bg-gray-100 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700/50 text-xs text-gray-700 dark:text-gray-400 leading-relaxed">
         {pseudo.description}
       </div>
 
-      {/* Bloco de código */}
+      {/* Code block */}
       <div className="rounded-lg bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-700/50 overflow-hidden">
         <div className="flex items-center justify-between px-3 py-1.5 bg-gray-100 dark:bg-gray-800/80 border-b border-gray-200 dark:border-gray-700/50">
           <span className="text-xs font-mono text-gray-600 dark:text-gray-400">pseudocódigo</span>
@@ -136,7 +69,7 @@ export default function PseudocodePanel({ algorithm, algoState }) {
         </div>
       </div>
 
-      {/* Legenda de estados */}
+      {/* State legend */}
       <div className="flex flex-wrap gap-3 text-xs text-gray-600 dark:text-gray-400">
         <div className="flex items-center gap-1.5">
           <span className="w-3 h-3 rounded bg-indigo-100 dark:bg-indigo-700/70 border border-indigo-400 dark:border-indigo-500" />

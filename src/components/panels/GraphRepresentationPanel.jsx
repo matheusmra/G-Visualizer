@@ -47,7 +47,6 @@ function buildIncMatrix(elements, isDirected) {
   // Edge labels: shorten auto-generated IDs for display
   const edgeLabels = edges.map((e, i) => {
     const id = e.data.id;
-    // If ID is short (1-3 chars) show as-is; otherwise show e0, e1, ...
     return id.length <= 3 ? id : `e${i}`;
   });
   return { nodes, edges: edgeLabels, matrix };

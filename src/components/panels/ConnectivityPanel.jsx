@@ -4,7 +4,7 @@ import {
   findConnectedComponents,
   findBridgesAndAPs,
   COMPONENT_COLORS,
-} from '../algorithms/connectivity.js';
+} from '../../algorithms/connectivity.js';
 
 export default function ConnectivityPanel({ elements, isDirected, onHighlight }) {
   const [result, setResult] = useState(null);

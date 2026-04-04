@@ -1,12 +1,4 @@
-const TRAVERSAL_ALGOS = ['BFS', 'DFS'];
-const CLOSURE_ALGOS   = ['FTD', 'FTI'];
-
-const ALGO_TITLES = {
-  BFS: 'Busca em Largura',
-  DFS: 'Busca em Profundidade',
-  FTD: 'Fecho Transitivo Direto',
-  FTI: 'Fecho Transitivo Indireto',
-};
+import { TRAVERSAL_ALGOS, CLOSURE_ALGOS, SORT_ALGOS, ALGO_TITLES } from '../../constants/algorithms.js';
 
 export default function ControlDeck({
   algorithm,
@@ -74,7 +66,26 @@ export default function ControlDeck({
           ))}
         </div>
       </div>
-
+      {/* Sorting group */}
+      <div className="flex items-center gap-1">
+        <span className="text-xs text-gray-600 dark:text-gray-500 mr-1 hidden sm:block">Ordenação</span>
+        <div className="flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+          {SORT_ALGOS.map(alg => (
+            <button
+              key={alg}
+              onClick={() => setAlgorithm(alg)}
+              title={ALGO_TITLES[alg]}
+              className={`px-3 py-1.5 text-sm font-bold transition-colors ${
+                algorithm === alg
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+              }`}
+            >
+              {alg}
+            </button>
+          ))}
+        </div>
+      </div>
       {/* Start node */}
       {nodeIds.length > 0 && (
         <div className="flex items-center gap-2">
@@ -123,7 +134,7 @@ export default function ControlDeck({
       <button
         onClick={onStepForward}
         disabled={!canStep || isPlaying}
-        title="Avan\u00e7ar um passo"
+        title="Avançar um passo"
         className="px-3 py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed text-gray-700 dark:text-gray-300 text-sm font-bold rounded-lg border border-gray-200 dark:border-gray-700 transition-colors"
       >
         Passo
@@ -178,5 +189,3 @@ export default function ControlDeck({
     </div>
   );
 }
-
-
