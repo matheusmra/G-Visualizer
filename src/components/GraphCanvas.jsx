@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import cytoscape from 'cytoscape';
 import { COMPONENT_COLORS } from '../algorithms/connectivity.js';
 
@@ -22,10 +22,12 @@ function buildStylesheet(isDirected) {
         'label': 'data(label)',
         'text-valign': 'center',
         'text-halign': 'center',
-        'font-size': 14,
+        'text-wrap': 'wrap',
+        'text-max-width': '52px',
+        'font-size': 11,
         'font-weight': 'bold',
-        'width': 44,
-        'height': 44,
+        'width': 52,
+        'height': 52,
         'transition-property': 'background-color, border-color, border-width',
         'transition-duration': '300ms',
       },
@@ -52,6 +54,7 @@ function buildStylesheet(isDirected) {
         'line-color': '#4ade80',
         'target-arrow-color': '#4ade80',
         'width': 3,
+        'line-style': 'solid',
       },
     },
     // connectivity highlight classes
@@ -73,13 +76,45 @@ function buildStylesheet(isDirected) {
 /** Collect current cy state and push to parent (used by edit mode). */
 function syncUp(cy, onGraphChange) {
   const nodes = cy.nodes().map(n => ({
-    data: { id: n.id(), label: n.data('label') },
+    data: { id: n.id(), label: n.id() },
     position: { ...n.position() },
   }));
   const edges = cy.edges().map(e => ({
     data: { id: e.id(), source: e.data('source'), target: e.data('target') },
   }));
   onGraphChange({ nodes, edges });
+}
+
+/**
+ * Animate a "draw-on" fill effect: the line appears to sweep from source to
+ * target by shrinking a huge invisible gap dash down to zero offset.
+ * After the animation settles the edge stays solid green.
+ */
+function startEdgeFill(edge, animatingRef) {
+  const id = edge.id();
+  if (animatingRef.current.has(id)) return;
+  animatingRef.current.add(id);
+
+  // A very large dash hides the entire gap; animating offset to 0 reveals the line
+  const BIG = 9999;
+  edge.style({
+    'line-style': 'dashed',
+    'line-dash-pattern': [BIG, 0],
+    'line-dash-offset': BIG,
+  });
+
+  edge.animate(
+    { style: { 'line-dash-offset': 0 } },
+    {
+      duration: 500,
+      easing: 'ease-out',
+      complete: () => {
+        animatingRef.current.delete(id);
+        // Lock to a clean solid line
+        edge.style({ 'line-style': 'solid', 'line-dash-pattern': [1, 0], 'line-dash-offset': 0 });
+      },
+    }
+  );
 }
 
 /** Pick the next alphabetic label not yet used in the graph. */
@@ -102,10 +137,14 @@ export default function GraphCanvas({
   onGraphChange,
   connectivityHighlight, // { componentMap, bridgeIds, apIds } | null
 }) {
-  const containerRef = useRef(null);
-  const cyRef       = useRef(null);
-  const editModeRef = useRef(editMode);  // read inside effects without re-triggering them
-  const edgeSrcRef  = useRef(null);      // source node id during addEdge
+  const containerRef    = useRef(null);
+  const cyRef           = useRef(null);
+  const editModeRef     = useRef(editMode);
+  const edgeSrcRef      = useRef(null);
+  const animatingEdges  = useRef(new Set());
+  // Incremented each time the canvas is destroyed+recreated so the editMode
+  // effect re-runs and re-attaches tap handlers on the new cy instance.
+  const [cyGen, setCyGen] = useState(0);
 
   // Keep ref in sync with prop
   useEffect(() => { editModeRef.current = editMode; }, [editMode]);
@@ -115,7 +154,8 @@ export default function GraphCanvas({
   // This prevents destroying the canvas (and losing positions) while the user edits.
   useEffect(() => {
     if (!containerRef.current) return;
-    if (editModeRef.current != null && cyRef.current) return; // preserve canvas in edit mode
+    // Preserve canvas during edit mode — UNLESS the graph was fully cleared
+    if (editModeRef.current != null && cyRef.current && elements.nodes.length > 0) return;
 
     if (cyRef.current) cyRef.current.destroy();
 
@@ -129,6 +169,7 @@ export default function GraphCanvas({
       boxSelectionEnabled: false,
       autoungrabify: false,
     });
+    setCyGen(g => g + 1); // signal editMode effect to re-attach handlers
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [elements, layout]);
 
@@ -183,7 +224,17 @@ export default function GraphCanvas({
     }
 
     return () => { cy.off('tap'); };
-  }, [editMode, onGraphChange]);
+  }, [editMode, onGraphChange, cyGen]);
+
+  // ── Sync node labels live (handles degree updates in edit mode) ──────────
+  useEffect(() => {
+    const cy = cyRef.current;
+    if (!cy) return;
+    elements.nodes.forEach(n => {
+      const node = cy.getElementById(n.data.id);
+      if (node.length) node.data('label', n.data.label);
+    });
+  }, [elements.nodes]);
 
   // ── Apply connectivity highlight ─────────────────────────────────────────
   useEffect(() => {
@@ -218,7 +269,12 @@ export default function GraphCanvas({
 
     if (!algoState) {
       cy.nodes().removeClass('visited frontier current');
-      cy.edges().removeClass('traversed');
+      cy.edges().forEach(edge => {
+        animatingEdges.current.delete(edge.id());
+        edge.stop();
+        edge.removeStyle('line-style line-dash-pattern line-dash-offset');
+        edge.removeClass('traversed');
+      });
       return;
     }
 
@@ -235,9 +291,22 @@ export default function GraphCanvas({
     cy.edges().forEach(edge => {
       const src = edge.source().id();
       const tgt = edge.target().id();
-      edge.toggleClass('traversed',
-        (visited.has(src) || src === current) && (visited.has(tgt) || tgt === current)
-      );
+      const shouldTraverse =
+        (visited.has(src) || src === current) && (visited.has(tgt) || tgt === current);
+      const wasTraversed = edge.hasClass('traversed');
+
+      if (shouldTraverse && !wasTraversed) {
+        edge.addClass('traversed');
+        startEdgeFill(edge, animatingEdges);
+      } else if (!shouldTraverse && wasTraversed) {
+        animatingEdges.current.delete(edge.id());
+        edge.stop();
+        edge.removeStyle('line-style line-dash-pattern line-dash-offset');
+        edge.removeClass('traversed');
+      } else if (shouldTraverse && !animatingEdges.current.has(edge.id())) {
+        // traversed class already set but animation was stopped (e.g. after step-back/reset)
+        startEdgeFill(edge, animatingEdges);
+      }
     });
   }, [algoState]);
 

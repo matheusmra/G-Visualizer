@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext.jsx';
 import GraphCanvas from '../components/GraphCanvas.jsx';
@@ -62,6 +62,26 @@ export default function VisualizerPage() {
     ? buildDirectedAdjMap(currentElements)
     : buildAdjMap(currentElements);
   const reverseMap = buildReverseAdjMap(currentElements);
+
+  // ── Grau de cada vértice ──────────────────────────────────────────────────
+  const enrichedElements = useMemo(() => {
+    const outDeg = {}, inDeg = {};
+    currentElements.nodes.forEach(n => { outDeg[n.data.id] = 0; inDeg[n.data.id] = 0; });
+    currentElements.edges.forEach(({ data: { source, target } }) => {
+      if (outDeg[source] !== undefined) outDeg[source] += 1;
+      if (inDeg[target]  !== undefined) inDeg[target]  += 1;
+    });
+    return {
+      nodes: currentElements.nodes.map(n => {
+        const id  = n.data.id;
+        const deg = currentIsDirected
+          ? `\u2191${inDeg[id]} \u2193${outDeg[id]}`
+          : String(inDeg[id] + outDeg[id]);
+        return { ...n, data: { ...n.data, label: `${id}\n${deg}` } };
+      }),
+      edges: currentElements.edges,
+    };
+  }, [currentElements, currentIsDirected]);
 
   // ── Toast helpers ─────────────────────────────────────────────────────────
   const addToast = useCallback(({ type, title, message, duration }) => {
@@ -205,6 +225,13 @@ export default function VisualizerPage() {
     handleReset();
   }, [handleReset]);
 
+  // ── Limpar destaque de conectividade quando o grafo muda ─────────────────
+  const nodeIdsKey = nodeIds.join(',');
+  useEffect(() => {
+    setConnectivityHighlight(null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nodeIdsKey]);
+
   const isDone = algoState?.done ?? false;
 
   return (
@@ -272,7 +299,7 @@ export default function VisualizerPage() {
         {/* Canvas */}
         <div className="flex-1 p-4 min-h-[420px] bg-gray-900">
           <GraphCanvas
-            elements={currentElements}
+            elements={enrichedElements}
             layout={currentLayout}
             algoState={algoState}
             algorithm={algorithm}
@@ -318,6 +345,7 @@ export default function VisualizerPage() {
             )}
             {rightPanel === 'connectivity' && (
               <ConnectivityPanel
+                key={nodeIdsKey}
                 elements={currentElements}
                 isDirected={currentIsDirected}
                 onHighlight={setConnectivityHighlight}
