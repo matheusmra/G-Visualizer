@@ -13,6 +13,7 @@ import { useGraphPreset } from '../hooks/useGraphPreset.js';
 import { buildAdjMap, buildDirectedAdjMap, buildReverseAdjMap } from '../utils/graphHelpers.js';
 import { ALGO_IDS, ALGO_TITLES } from '../constants/algorithms.js';
 import { PRESETS } from '../data/presets.js';
+import ErrorBoundary from '../components/ui/ErrorBoundary.jsx';
 
 const ALGO_SUBTITLES = {
   BFS:  'Travessia por nível com fila FIFO',
@@ -450,16 +451,18 @@ export default function VisualizerPage() {
           )}
 
           {/* Graph canvas */}
-          <GraphCanvas
-            ref={canvasRef}
-            elements={enrichedElements}
-            layout={currentLayout}
-            algoState={algoState}
-            editMode={isCustom ? editMode : null}
-            isDirected={currentIsDirected}
-            onGraphChange={handleGraphChangeWithReset}
-            connectivityHighlight={connectivityHighlight}
-          />
+          <ErrorBoundary mini>
+            <GraphCanvas
+              ref={canvasRef}
+              elements={enrichedElements}
+              layout={currentLayout}
+              algoState={algoState}
+              editMode={isCustom ? editMode : null}
+              isDirected={currentIsDirected}
+              onGraphChange={handleGraphChangeWithReset}
+              connectivityHighlight={connectivityHighlight}
+            />
+          </ErrorBoundary>
 
           {/* Floating playback controls */}
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10">
