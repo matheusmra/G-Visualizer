@@ -78,11 +78,11 @@ export default function AlgorithmsPage() {
         </nav>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 md:px-12 py-12">
+      <main className="max-w-7xl mx-auto px-4 md:px-12 py-8 md:py-12">
 
         {/* ── Page title ── */}
         <div className="mb-10">
-          <h1 className="text-4xl font-bold text-[#191c1e] dark:text-slate-50 mb-3 font-headline">
+          <h1 className="text-3xl md:text-4xl font-bold text-[#191c1e] dark:text-slate-50 mb-3 font-headline">
             Biblioteca de Algoritmos
           </h1>
           <p className="text-[#515f74] dark:text-slate-400 max-w-xl leading-relaxed">

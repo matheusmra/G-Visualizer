@@ -203,6 +203,9 @@ export default function VisualizerPage() {
     reset();
   }, [currentElements, currentIsDirected, handleGraphChange, setIsDirected, setPresetKey, setEditMode, pause, reset]);
 
+  const [mobileSheet, setMobileSheet] = useState(null); // null | 'controls' | 'data'
+  const toggleSheet = (sheet) => setMobileSheet(prev => prev === sheet ? null : sheet);
+
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-white dark:bg-slate-950 text-[#191c1e] dark:text-slate-100">
 
@@ -211,42 +214,43 @@ export default function VisualizerPage() {
         currentAlgo={algorithm} 
         onAlgoChange={handleAlgoChange} 
       />
-      {/* ── Body ── */}
-      <div className="flex min-h-0 flex-1 overflow-hidden">
 
-        <ControlSidebar
-            presetKey={presetKey} setPresetKey={setPresetKey}
-            isCustom={isCustom} editMode={editMode} setEditMode={setEditMode}
-            isDirected={currentIsDirected} setIsDirected={setIsDirected}
-            handleActivatePresetEdit={handleActivatePresetEdit} handleClearGraphWithReset={handleClearGraphWithReset} handleRandomize={handleRandomize}
-            nodeIds={nodeIds} startNode={startNode} setStartNode={setStartNode}
-            algoState={algoState} start={start} handleReset={handleReset}
-            speed={speed} setSpeed={setSpeed}
-            isDone={isDone} history={history}
-        />
-        {/* ── Center canvas ── */}
-        <main className="flex-1 min-w-0 relative overflow-hidden bg-[#f2f4f6] dark:bg-slate-900">
-          {/* Dot-grid background */}
+      {/* ── Body ── */}
+      <div className="flex min-h-0 flex-1 overflow-hidden relative">
+
+        {/* Left sidebar — hidden on mobile (sheet instead); fixed width on md+ */}
+        <div className="hidden md:flex md:flex-col md:flex-initial md:min-h-0">
+          <ControlSidebar
+              presetKey={presetKey} setPresetKey={setPresetKey}
+              isCustom={isCustom} editMode={editMode} setEditMode={setEditMode}
+              isDirected={currentIsDirected} setIsDirected={setIsDirected}
+              handleActivatePresetEdit={handleActivatePresetEdit} handleClearGraphWithReset={handleClearGraphWithReset} handleRandomize={handleRandomize}
+              nodeIds={nodeIds} startNode={startNode} setStartNode={setStartNode}
+              algoState={algoState} start={start} handleReset={handleReset}
+              speed={speed} setSpeed={setSpeed}
+              isDone={isDone} history={history}
+          />
+        </div>
+
+        {/* ── Canvas — always visible ── */}
+        <main className="flex flex-1 min-w-0 flex-col relative overflow-hidden bg-[#f2f4f6] dark:bg-slate-900">
           <div className="dot-grid absolute inset-0 pointer-events-none z-0" />
 
-          {/* Algorithm label — overlaid top-left */}
-          <div className="absolute top-6 left-7 z-10 pointer-events-none">
-            <h2 className="text-2xl font-bold text-[#191c1e] dark:text-slate-50 font-headline leading-tight">
+          {/* Algorithm label */}
+          <div className="absolute top-4 left-4 md:top-6 md:left-7 z-10 pointer-events-none">
+            <h2 className="text-lg md:text-2xl font-bold text-[#191c1e] dark:text-slate-50 font-headline leading-tight">
               {ALGO_TITLES[algorithm]}
             </h2>
-            <p className="text-sm text-[#515f74] dark:text-slate-400 mt-0.5">
-              
-            </p>
           </div>
 
-          {/* Edit mode hint — overlaid top-right */}
+          {/* Edit mode hint */}
           {isCustom && editMode && (
-            <div className="absolute top-6 right-6 z-10 pointer-events-none">
+            <div className="absolute top-4 right-4 md:top-6 md:right-6 z-10 pointer-events-none">
               <div className="bg-[#004ac6]/10 dark:bg-blue-900/40 border border-[#004ac6]/25 dark:border-blue-700/40 rounded-xl px-3 py-1.5">
                 <p className="text-xs font-medium text-[#004ac6] dark:text-blue-300">
-                  {editMode === 'addNode' && 'Clique no canvas para adicionar um nó'}
-                  {editMode === 'addEdge' && 'Clique na origem, depois no destino'}
-                  {editMode === 'delete'  && 'Clique em um nó ou aresta para remover'}
+                  {editMode === 'addNode' && 'Toque no canvas para adicionar um nó'}
+                  {editMode === 'addEdge' && 'Toque na origem, depois no destino'}
+                  {editMode === 'delete'  && 'Toque em um nó ou aresta para remover'}
                 </p>
               </div>
             </div>
@@ -254,14 +258,13 @@ export default function VisualizerPage() {
 
           {/* Done badge */}
           {isDone && (
-            <div className="absolute top-6 right-6 z-10 pointer-events-none">
+            <div className="absolute top-4 right-4 md:top-6 md:right-6 z-10 pointer-events-none">
               <span className="bg-[#6ffbbe]/30 dark:bg-emerald-900/50 border border-[#006242]/20 dark:border-emerald-700/50 text-[#006242] dark:text-emerald-300 text-xs font-bold px-3 py-1.5 rounded-full">
                 ✓ Concluído
               </span>
             </div>
           )}
 
-          {/* Graph canvas */}
           <ErrorBoundary mini>
             <GraphCanvas
               ref={canvasRef}
@@ -275,7 +278,6 @@ export default function VisualizerPage() {
             />
           </ErrorBoundary>
 
-          {/* Playback Controls (Componentized) */}
           <PlaybackBar 
             stepBackward={stepBackward} 
             canBack={history.length > 0} 
@@ -293,17 +295,14 @@ export default function VisualizerPage() {
           />
         </main>
 
-        {/* ── Right panel ── */}
-        <aside className="w-72 xl:w-80 shrink-0 border-l border-[#e0e3e5] dark:border-slate-800 overflow-y-auto bg-white dark:bg-slate-950 flex flex-col">
-
+        {/* ── Right panel — hidden on mobile (sheet instead); fixed width on md+ ── */}
+        <aside className="hidden md:flex md:flex-col md:flex-initial w-72 xl:w-80 shrink-0 border-l border-[#e0e3e5] dark:border-slate-800 overflow-y-auto bg-white dark:bg-slate-950">
           <RightSection icon="code" title="Pseudocódigo">
             <PseudocodePanel algorithm={algorithm} algoState={algoState} />
           </RightSection>
-
           <RightSection icon="monitoring" title="Dados ao Vivo">
             <DataPanel algorithm={algorithm} algoState={algoState} />
           </RightSection>
-
           <RightSection icon="grid_on" title="Matriz de Adjacência">
             <GraphRepresentationPanel
               elements={currentElements}
@@ -311,7 +310,6 @@ export default function VisualizerPage() {
               defaultView="adj-matrix"
             />
           </RightSection>
-
           <RightSection icon="hub" title="Conectividade">
             <ConnectivityPanel
               key={nodeIdsKey}
@@ -320,9 +318,99 @@ export default function VisualizerPage() {
               onHighlight={setConnectivityHighlight}
             />
           </RightSection>
-
         </aside>
+
+        {/* ── Mobile backdrop ── */}
+        {mobileSheet && (
+          <div
+            className="md:hidden absolute inset-0 bg-black/40 z-20"
+            onClick={() => setMobileSheet(null)}
+            aria-hidden="true"
+          />
+        )}
+
+        {/* ── Mobile: Controls bottom sheet ── */}
+        <div
+          className={`md:hidden absolute bottom-0 left-0 right-0 z-30 flex flex-col rounded-t-2xl bg-white dark:bg-slate-950 shadow-2xl transition-transform duration-300 ease-in-out ${mobileSheet === 'controls' ? 'translate-y-0' : 'translate-y-full'}`}
+          style={{ maxHeight: '72vh' }}
+          aria-hidden={mobileSheet !== 'controls'}
+        >
+          <MobileSheetHandle title="Controles" onClose={() => setMobileSheet(null)} />
+          <div className="flex-1 min-h-0 overflow-hidden">
+            <ControlSidebar
+                presetKey={presetKey} setPresetKey={setPresetKey}
+                isCustom={isCustom} editMode={editMode} setEditMode={setEditMode}
+                isDirected={currentIsDirected} setIsDirected={setIsDirected}
+                handleActivatePresetEdit={handleActivatePresetEdit} handleClearGraphWithReset={handleClearGraphWithReset} handleRandomize={handleRandomize}
+                nodeIds={nodeIds} startNode={startNode} setStartNode={setStartNode}
+                algoState={algoState} start={start} handleReset={handleReset}
+                speed={speed} setSpeed={setSpeed}
+                isDone={isDone} history={history}
+            />
+          </div>
+        </div>
+
+        {/* ── Mobile: Data bottom sheet ── */}
+        <div
+          className={`md:hidden absolute bottom-0 left-0 right-0 z-30 flex flex-col rounded-t-2xl bg-white dark:bg-slate-950 shadow-2xl transition-transform duration-300 ease-in-out ${mobileSheet === 'data' ? 'translate-y-0' : 'translate-y-full'}`}
+          style={{ maxHeight: '72vh' }}
+          aria-hidden={mobileSheet !== 'data'}
+        >
+          <MobileSheetHandle title="Dados" onClose={() => setMobileSheet(null)} />
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            <RightSection icon="code" title="Pseudocódigo">
+              <PseudocodePanel algorithm={algorithm} algoState={algoState} />
+            </RightSection>
+            <RightSection icon="monitoring" title="Dados ao Vivo">
+              <DataPanel algorithm={algorithm} algoState={algoState} />
+            </RightSection>
+            <RightSection icon="grid_on" title="Matriz de Adjacência">
+              <GraphRepresentationPanel
+                elements={currentElements}
+                isDirected={currentIsDirected}
+                defaultView="adj-matrix"
+              />
+            </RightSection>
+            <RightSection icon="hub" title="Conectividade">
+              <ConnectivityPanel
+                key={nodeIdsKey}
+                elements={currentElements}
+                isDirected={currentIsDirected}
+                onHighlight={setConnectivityHighlight}
+              />
+            </RightSection>
+          </div>
+        </div>
+
       </div>
+
+      {/* ── Mobile bottom action bar ── */}
+      <nav className="md:hidden shrink-0 flex border-t border-[#e0e3e5] dark:border-slate-800 bg-white dark:bg-slate-950" aria-label="Painéis">
+        {[
+          { id: 'controls', icon: 'tune',        label: 'Controles' },
+          { id: 'data',     icon: 'monitoring',   label: 'Dados'     },
+        ].map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => toggleSheet(tab.id)}
+            className={`flex-1 flex flex-col items-center gap-0.5 py-2.5 text-[10px] font-bold tracking-wide transition-colors ${
+              mobileSheet === tab.id
+                ? 'text-[#004ac6] dark:text-blue-400'
+                : 'text-[#737686] dark:text-slate-500'
+            }`}
+            aria-pressed={mobileSheet === tab.id}
+          >
+            <span
+              className="material-symbols-outlined"
+              style={{ fontSize: '22px', fontVariationSettings: mobileSheet === tab.id ? "'FILL' 1" : "'FILL' 0" }}
+              aria-hidden="true"
+            >
+              {tab.icon}
+            </span>
+            {tab.label}
+          </button>
+        ))}
+      </nav>
 
       <ToastContainer />
     </div>
@@ -342,6 +430,25 @@ function RightSection({ icon, title, children }) {
       <div className="p-4">
         {children}
       </div>
+    </div>
+  );
+}
+
+/* ── Mobile bottom sheet handle + header ─────────────────────────────────── */
+function MobileSheetHandle({ title, onClose }) {
+  return (
+    <div className="shrink-0 flex items-center justify-between px-4 pt-3 pb-2 border-b border-[#e0e3e5] dark:border-slate-800">
+      <div className="absolute left-1/2 -translate-x-1/2 top-2 w-8 h-1 rounded-full bg-[#c3c6d7] dark:bg-slate-700" />
+      <span className="text-xs font-bold uppercase tracking-[0.15em] text-[#515f74] dark:text-slate-400 mt-1">
+        {title}
+      </span>
+      <button
+        onClick={onClose}
+        aria-label="Fechar painel"
+        className="w-7 h-7 flex items-center justify-center rounded-lg text-[#737686] dark:text-slate-500 hover:bg-[#f2f4f6] dark:hover:bg-slate-800 transition-colors"
+      >
+        <span className="material-symbols-outlined" style={{ fontSize: '18px' }} aria-hidden="true">close</span>
+      </button>
     </div>
   );
 }
