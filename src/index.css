@@ -41,6 +41,15 @@
   user-select: none;
 }
 
+/* Hide scrollbar while keeping scrollability */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
 /* Pulsing active node indicator */
 .active-dot {
   box-shadow: 0 0 0 3px rgba(0, 74, 198, 0.18), 0 0 15px 2px rgba(0, 74, 198, 0.28);

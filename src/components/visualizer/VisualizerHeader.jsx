@@ -11,20 +11,20 @@ const DIFFICULTY_COLORS = {
 export function VisualizerHeader({ algoDetails, currentAlgo, onAlgoChange }) {
   const navigate = useNavigate();
   return (
-    <header className="h-16 border-b border-[#e0e3e5] dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-6 flex items-center justify-between shrink-0 z-40 relative">
-      <div className="flex items-center gap-4 flex-1">
+    <header className="h-14 md:h-16 border-b border-[#e0e3e5] dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-3 md:px-6 flex items-center justify-between shrink-0 z-40 relative">
+      <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
         <button
           onClick={() => navigate('/algoritmos')}
-          className="w-10 h-10 flex items-center justify-center rounded-xl bg-[#f2f4f6] dark:bg-slate-800 text-[#515f74] dark:text-slate-400 hover:text-[#004ac6] dark:hover:text-blue-400 hover:bg-[#eceef0] dark:hover:bg-slate-700 transition-colors"
+          className="shrink-0 w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-xl bg-[#f2f4f6] dark:bg-slate-800 text-[#515f74] dark:text-slate-400 hover:text-[#004ac6] dark:hover:text-blue-400 hover:bg-[#eceef0] dark:hover:bg-slate-700 transition-colors"
           aria-label="Voltar para biblioteca de algoritmos"
         >
           <span className="material-symbols-outlined" style={{ fontSize: '20px' }} aria-hidden="true">arrow_back</span>
         </button>
 
-        <div className="h-6 w-px bg-[#e0e3e5] dark:bg-slate-800 hidden sm:block" />
+        <div className="h-6 w-px bg-[#e0e3e5] dark:bg-slate-800 hidden sm:block shrink-0" />
 
-        {/* Algorithm Tabs - High Priority Accessibility (HIGH-06) */}
-        <nav className="flex items-center gap-1 mx-2" role="tablist" aria-label="Seleção de algoritmos">
+        {/* Algorithm Tabs - scrollable on mobile */}
+        <nav className="flex items-center gap-1 overflow-x-auto scrollbar-none min-w-0" role="tablist" aria-label="Seleção de algoritmos">
           {ALGO_IDS.map(alg => (
             <button
               key={alg}
@@ -32,7 +32,7 @@ export function VisualizerHeader({ algoDetails, currentAlgo, onAlgoChange }) {
               aria-selected={currentAlgo === alg}
               aria-label={`Visualizar algoritmo ${ALGO_TITLES[alg]}`}
               onClick={() => onAlgoChange?.(alg)}
-              className={`px-3 py-1.5 text-xs font-bold font-headline transition-all rounded-lg ${
+              className={`shrink-0 px-2.5 md:px-3 py-1.5 text-xs font-bold font-headline transition-all rounded-lg ${
                 currentAlgo === alg
                   ? 'bg-[#004ac6] text-white shadow-sm shadow-[#004ac6]/30'
                   : 'text-[#515f74] dark:text-slate-400 hover:bg-[#004ac6]/10 dark:hover:bg-blue-400/10 hover:text-[#004ac6] dark:hover:text-blue-400'

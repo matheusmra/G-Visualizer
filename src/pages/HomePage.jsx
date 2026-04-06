@@ -48,34 +48,34 @@ export default function HomePage() {
         <div className="dot-grid fixed inset-0 pointer-events-none" />
 
         {/* ── Hero ── */}
-        <section className="relative pt-24 pb-32 px-6 md:px-12 overflow-hidden">
+        <section className="relative pt-16 md:pt-24 pb-20 md:pb-32 px-6 md:px-12 overflow-hidden">
           <div className="max-w-7xl mx-auto flex flex-col items-center text-center">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#d5e3fc] dark:bg-blue-950/60 text-[#57657a] dark:text-blue-300 rounded-full text-xs font-bold tracking-widest uppercase mb-6">
               <span className="material-symbols-outlined" style={{ fontSize: '14px' }} aria-hidden="true">terminal</span>
               V 0.1 · Visualizador Interativo
             </div>
 
-            <h1 className="text-6xl md:text-8xl font-bold tracking-tighter leading-[0.9] mb-8 text-[#191c1e] dark:text-slate-50 font-headline">
+            <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold tracking-tighter leading-[0.9] mb-6 md:mb-8 text-[#191c1e] dark:text-slate-50 font-headline">
               Visualize a Lógica<br />
               <span className="text-[#004ac6] dark:text-blue-400 italic">dos Grafos</span>
             </h1>
 
-            <p className="max-w-2xl text-lg text-[#515f74] dark:text-slate-400 mb-12 leading-relaxed">
+            <p className="max-w-2xl text-base md:text-lg text-[#515f74] dark:text-slate-400 mb-8 md:mb-12 leading-relaxed">
               Um laboratório digital para explorar estruturas de dados complexas.
 
             </p>
 
-            <div className="flex flex-wrap gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center w-full sm:w-auto">
               <button
                 onClick={() => navigate('/visualizar/BFS?preset=tree')}
-                className="bg-[#004ac6] hover:bg-blue-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all shadow-xl shadow-[#004ac6]/30 flex items-center gap-3 font-headline"
+                className="bg-[#004ac6] hover:bg-blue-600 text-white px-6 md:px-8 py-3.5 md:py-4 rounded-xl font-bold text-base md:text-lg transition-all shadow-xl shadow-[#004ac6]/30 flex items-center justify-center gap-3 font-headline"
               >
                 Abrir o Lab
                 <span className="material-symbols-outlined" aria-hidden="true">rocket_launch</span>
               </button>
               <button
                 onClick={() => navigate('/algoritmos')}
-                className="bg-[#f2f4f6] dark:bg-slate-800/80 hover:bg-[#eceef0] dark:hover:bg-slate-700 text-[#191c1e] dark:text-slate-200 px-8 py-4 rounded-xl font-bold text-lg transition-all border border-[#c3c6d7]/30 dark:border-slate-700 font-headline"
+                className="bg-[#f2f4f6] dark:bg-slate-800/80 hover:bg-[#eceef0] dark:hover:bg-slate-700 text-[#191c1e] dark:text-slate-200 px-6 md:px-8 py-3.5 md:py-4 rounded-xl font-bold text-base md:text-lg transition-all border border-[#c3c6d7]/30 dark:border-slate-700 font-headline"
               >
                 Ver Algoritmos
               </button>
@@ -88,8 +88,8 @@ export default function HomePage() {
         <AlgoLibrarySection />
 
         {/* ── Open Source Section ── */}
-        <section className="px-6 md:px-12 py-32">
-          <div className="max-w-5xl mx-auto rounded-[3rem] bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-16 text-center relative overflow-hidden shadow-sm">
+        <section className="px-4 md:px-12 py-16 md:py-32">
+          <div className="max-w-5xl mx-auto rounded-2xl md:rounded-[3rem] bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 md:p-16 text-center relative overflow-hidden shadow-sm">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1 bg-gradient-to-r from-transparent via-[#004ac6] to-transparent opacity-50" />
 
             <div className="mb-8 flex justify-center">
@@ -98,11 +98,11 @@ export default function HomePage() {
               </div>
             </div>
 
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-[#191c1e] dark:text-slate-50 font-headline tracking-tight">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 md:mb-6 text-[#191c1e] dark:text-slate-50 font-headline tracking-tight">
               Powered by <span className="text-[#004ac6] dark:text-blue-400">Open Source</span>
             </h2>
 
-            <p className="text-lg text-[#515f74] dark:text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-base md:text-lg text-[#515f74] dark:text-slate-400 mb-8 md:mb-10 max-w-2xl mx-auto leading-relaxed">
               O G Visualizer é um projeto educacional totalmente aberto e gratuito.
               Explore o código-fonte, contribua com novos algoritmos ou use-o como base para seus próprios estudos.
             </p>
@@ -112,7 +112,7 @@ export default function HomePage() {
                 href="https://github.com/matheusmra/G-Visualizer"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-[#191c1e] dark:bg-white text-white dark:text-[#191c1e] px-10 py-5 rounded-2xl font-black text-xl hover:scale-105 transition-transform flex items-center gap-3 font-headline"
+                className="bg-[#191c1e] dark:bg-white text-white dark:text-[#191c1e] px-7 md:px-10 py-4 md:py-5 rounded-2xl font-black text-lg md:text-xl hover:scale-105 transition-transform flex items-center gap-3 font-headline"
               >
                 <GitHubIcon size={24} />
                 Ver no GitHub
