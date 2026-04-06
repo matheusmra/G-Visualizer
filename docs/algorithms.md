@@ -1,112 +1,129 @@
-﻿# Algoritmos
+# Algorithms
 
-O G-Visualizer implementa quatro algoritmos de grafos. Cada um vive em seu próprio arquivo em `src/algorithms/` e expõe funções puras `init*` e `step*`.
+G-Visualizer currently implements five graph algorithms. Each algorithm resides in its own file within `src/algorithms/` and exposes pure `init*` and `step*` functions.
 
 ---
 
-## Busca em Largura (BFS)
+## Breadth-First Search (BFS)
 
-**Arquivo:** `src/algorithms/BFS.js`
+**File:** `src/algorithms/BFS.js`
 **Exports:** `initBFS`, `stepBFS`, `buildAdjMap`
 
-Explora o grafo nível por nível utilizando uma **fila**. Garante o menor caminho em grafos não-ponderados.
+Explores the graph level-by-level using a **queue**. Guarantees the shortest path in unweighted graphs.
 
-| Complexidade de Tempo | Complexidade de Espaço |
-|-----------------------|------------------------|
-| O(V + E)              | O(V)                   |
+| Time Complexity | Space Complexity |
+|------------------|------------------|
+| O(V + E)         | O(V)             |
 
-**Ideal para:** menor caminho, nível/distância, grafos não-ponderados.
+**Ideal for:** shortest path, level/distance, unweighted graphs.
 
-### Como funciona
+### How it works
 
-1. Enfileira o nó inicial e marca como na fronteira
-2. A cada passo: desenfileira o nó atual, marca como visitado
-3. Enfileira todos os vizinhos ainda não visitados e não na fronteira
-4. Repete até a fila esvaziar
+1. Enqueue the starting node and mark it as in the frontier.
+2. For each step: dequeue the current node, mark it as visited.
+3. Enqueue all neighbors that are not yet visited and not in the frontier.
+4. Repeat until the queue is empty.
 
 ---
 
-## Busca em Profundidade (DFS)
+## Depth-First Search (DFS)
 
-**Arquivo:** `src/algorithms/DFS.js`
+**File:** `src/algorithms/DFS.js`
 **Exports:** `initDFS`, `stepDFS`
 
-Mergulha o mais fundo possível antes de retroceder, utilizando uma **pilha** explícita.
+Dives as deep as possible before backtracking, using an explicit **stack**.
 
-| Complexidade de Tempo | Complexidade de Espaço |
-|-----------------------|------------------------|
-| O(V + E)              | O(V)                   |
+| Time Complexity | Space Complexity |
+|------------------|------------------|
+| O(V + E)         | O(V)             |
 
-**Ideal para:** detecção de ciclos, ordenação topológica, labirintos.
+**Ideal for:** cycle detection, topological sorting, labyrinths.
 
-### Como funciona
+### How it works
 
-1. Empilha o nó inicial e marca como na fronteira
-2. A cada passo: desempilha o nó atual, marca como visitado
-3. Empilha os vizinhos não visitados (em ordem reversa para manter ordem alfabética)
-4. Repete até a pilha esvaziar
+1. Push the starting node onto the stack and mark it as in the frontier.
+2. For each step: pop the current node, mark it as visited.
+3. Push unvisited neighbors onto the stack (in reverse order to maintain alphabetical consistency).
+4. Repeat until the stack is empty.
 
 ---
 
-## Fecho Transitivo Direto (FTD)
+## Direct Transitive Closure (FTD)
 
-**Arquivo:** `src/algorithms/FTC.js`
+**File:** `src/algorithms/FT.js`
 **Exports:** `initFTD`, `stepFTD`, `buildDirectedAdjMap`
 
-Encontra todos os nós alcançáveis a partir de uma origem seguindo as **arestas de saída** do grafo dirigido. Internamente reutiliza `stepBFS` de `BFS.js`.
+Finds all nodes reachable from a source by following the **outgoing edges** of a directed graph. Internally reuses `stepBFS` logic.
 
-| Complexidade de Tempo | Complexidade de Espaço |
-|-----------------------|------------------------|
-| O(V + E)              | O(V)                   |
+| Time Complexity | Space Complexity |
+|------------------|------------------|
+| O(V + E)         | O(V)             |
 
-**Ideal para:** alcançabilidade, dependências, grafos dirigidos.
+**Ideal for:** reachability, dependency mapping, directed graphs.
 
 ---
 
-## Fecho Transitivo Indireto (FTI)
+## Indirect Transitive Closure (FTI)
 
-**Arquivo:** `src/algorithms/FTC.js`
+**File:** `src/algorithms/FT.js`
 **Exports:** `initFTI`, `stepFTI`, `buildReverseAdjMap`
 
-Encontra todos os **predecessores** de uma origem executando BFS no grafo com as arestas invertidas.
+Finds all **predecessors** of a source node by performing a BFS on the graph with reversed edges.
 
-| Complexidade de Tempo | Complexidade de Espaço |
-|-----------------------|------------------------|
-| O(V + E)              | O(V)                   |
+| Time Complexity | Space Complexity |
+|------------------|------------------|
+| O(V + E)         | O(V)             |
 
-**Ideal para:** predecessores, análise de impacto reverso, grafos dirigidos.
+**Ideal for:** predecessors, impact analysis, directed graphs.
 
 ---
 
-## Análise de Conectividade
+## Topological Sort (TOPO)
 
-**Arquivo:** `src/algorithms/connectivity.js`
+**File:** `src/algorithms/TopologicalSort.js`
+**Exports:** `initTopSort`, `stepTopSort`
+
+Sorts the vertices of a Directed Acyclic Graph (DAG) such that for every directed edge $u \to v$, node $u$ comes before $v$ in the ordering. Uses **Kahn's Algorithm** (BFS-based in-degree tracking).
+
+| Time Complexity | Space Complexity |
+|------------------|------------------|
+| O(V + E)         | O(V)             |
+
+**Ideal for:** task scheduling, dependency resolution, build systems.
+
+---
+
+## Connectivity Analysis
+
+**File:** `src/algorithms/connectivity.js`
 **Exports:** `findSCC`, `findConnectedComponents`, `findBridgesAndAPs`, `COMPONENT_COLORS`
 
-Não é um algoritmo de travessia interativa — é executado de forma estática sobre o grafo atual.
+This is not an interactive traversal algorithm; it is executed statically over the current graph for analytical purposes.
 
-| Função                    | Algoritmo       | Grafo         |
+| Function                  | Algorithm       | Graph Type    |
 |---------------------------|-----------------|---------------|
-| `findSCC`                 | Kosaraju        | Dirigido      |
-| `findConnectedComponents` | DFS simples     | Não-dirigido  |
-| `findBridgesAndAPs`       | Tarjan          | Não-dirigido  |
-
-### Estado do Algoritmo (campos comuns)
-
-Cada `step*` retorna um novo objeto imutável com:
-
-| Campo              | Tipo      | Descrição                                           |
-|--------------------|-----------|-----------------------------------------------------|
-| `queue` / `stack`  | `Array`   | Estrutura de dados principal                        |
-| `visited`          | `Set`     | Nós já visitados                                    |
-| `inFrontier`       | `Set`     | Nós na fronteira (fila/pilha)                       |
-| `current`          | `string`  | Nó sendo processado no passo atual                  |
-| `order`            | `Array`   | Sequência de visitas acumulada                      |
-| `done`             | `boolean` | Se o algoritmo terminou                             |
-| `pseudoLines`      | `Array`   | Índices das linhas ativas no pseudocódigo           |
-| `eventType`        | `string`  | `step`, `step_skip`, `done`, `done_unreachable`     |
-| `stepCount`        | `number`  | Contador incremental para efeitos reativos          |
+| `findSCC`                 | Kosaraju        | Directed      |
+| `findConnectedComponents` | Simple DFS      | Undirected    |
+| `findBridgesAndAPs`       | Tarjan          | Undirected    |
 
 ---
 
-← [Voltar ao README](../README.md)
+## Algorithm State (Common Fields)
+
+Each `step*` function returns a new immutable object containing:
+
+| Field             | Type      | Description                                           |
+|--------------------|-----------|-------------------------------------------------------|
+| `queue` / `stack`  | `Array`   | Main data structure                                   |
+| `visited`          | `Set`     | Nodes that have already been visited                  |
+| `inFrontier`       | `Set`     | Nodes currently in the frontier (queue/stack)         |
+| `current`          | `string`  | Node being processed in the current step              |
+| `order`            | `Array`   | Accumulated visit sequence                            |
+| `done`             | `boolean` | Whether the algorithm has finished                    |
+| `pseudoLines`      | `Array`   | Indices of the active lines in the pseudocode         |
+| `eventType`        | `string`  | `step`, `step_skip`, `done`, `done_unreachable`, etc. |
+| `stepCount`        | `number`  | Incremental counter for reactive effects              |
+
+---
+
+← [Back to README](../README.md)

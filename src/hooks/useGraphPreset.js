@@ -16,20 +16,32 @@ import { PRESETS } from '../data/presets.js';
 const EMPTY_GRAPH = { nodes: [], edges: [] };
 
 export function useGraphPreset(initialPresetKey = 'cyclic', setSearchParams) {
-  const [presetKey,      setPresetKeyState] = useState(initialPresetKey);
+  const [presetKey, setPresetKeyState] = useState(() => {
+    return Object.keys(PRESETS).includes(initialPresetKey) ? initialPresetKey : 'cyclic';
+  });
   const [customElements, setCustomElements] = useState(EMPTY_GRAPH);
   const [isDirected,     setIsDirected]     = useState(false);
   const [editMode,       setEditMode]       = useState(null);
 
-  // Sync URL when presetKey changes
+  // Sync URL when presetKey changes (State -> URL)
   useEffect(() => {
+    if (!setSearchParams) return;
     setSearchParams(prev => {
       const next = new URLSearchParams(prev);
-      next.set('preset', presetKey);
-      return next;
-    });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [presetKey]);
+      if (next.get('preset') !== presetKey) {
+        next.set('preset', presetKey);
+        return next;
+      }
+      return prev;
+    }, { replace: true });
+  }, [presetKey, setSearchParams]);
+
+  // Sync state when URL changes (URL -> State)
+  useEffect(() => {
+    if (initialPresetKey && initialPresetKey !== presetKey && Object.keys(PRESETS).includes(initialPresetKey)) {
+      setPresetKeyState(initialPresetKey);
+    }
+  }, [initialPresetKey]);
 
   const setPresetKey = useCallback((key) => {
     setPresetKeyState(key);

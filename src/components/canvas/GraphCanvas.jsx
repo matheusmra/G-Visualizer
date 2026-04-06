@@ -1,19 +1,8 @@
-import { useRef, useEffect, useState, forwardRef, useImperativeHandle } from 'react';
+import { useRef, useEffect, useState, useMemo, forwardRef, useImperativeHandle } from 'react';
 import cytoscape from 'cytoscape';
 import { COMPONENT_COLORS } from '../../algorithms/connectivity.js';
 import { buildStylesheet } from '../../constants/cytoscape.js';
-
-/** Collect current cy state and push to parent (used by edit mode). */
-function syncUp(cy, onGraphChange) {
-  const nodes = cy.nodes().map(n => ({
-    data: { id: n.id(), label: n.id() },
-    position: { ...n.position() },
-  }));
-  const edges = cy.edges().map(e => ({
-    data: { id: e.id(), source: e.data('source'), target: e.data('target') },
-  }));
-  onGraphChange({ nodes, edges });
-}
+import { useGraphEditMode } from '../../hooks/useGraphEditMode.js';
 
 /**
  * Animate a "draw-on" fill effect: the line appears to sweep from source to
@@ -47,16 +36,6 @@ function startEdgeFill(edge, animatingRef) {
   );
 }
 
-/** Pick the next alphabetic label not yet used in the graph. */
-function nextLabel(cy) {
-  const used = new Set(cy.nodes().map(n => n.id()));
-  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  for (const l of letters) if (!used.has(l)) return l;
-  let i = 1;
-  while (used.has(`N${i}`)) i++;
-  return `N${i}`;
-}
-
 const GraphCanvas = forwardRef(function GraphCanvas({
   elements,
   layout,
@@ -83,6 +62,8 @@ const GraphCanvas = forwardRef(function GraphCanvas({
   const [cyGen, setCyGen] = useState(0);
   const [initError, setInitError] = useState(null);
 
+  const memoizedStylesheet = useMemo(() => buildStylesheet(isDirected ?? false), [isDirected]);
+
   // Keep ref in sync with prop
   useEffect(() => { editModeRef.current = editMode; }, [editMode]);
 
@@ -100,7 +81,7 @@ const GraphCanvas = forwardRef(function GraphCanvas({
       cyRef.current = cytoscape({
         container: containerRef.current,
         elements: [...elements.nodes, ...elements.edges],
-        style: buildStylesheet(isDirected ?? false),
+        style: memoizedStylesheet,
         layout,
         userZoomingEnabled: true,
         userPanningEnabled: true,
@@ -122,53 +103,11 @@ const GraphCanvas = forwardRef(function GraphCanvas({
 
   // ── Update arrow style when isDirected toggles ────────────────────────────
   useEffect(() => {
-    if (cyRef.current) cyRef.current.style(buildStylesheet(isDirected ?? false));
-  }, [isDirected]);
+    if (cyRef.current) cyRef.current.style(memoizedStylesheet);
+  }, [memoizedStylesheet]);
 
   // ── Edit mode event handlers ──────────────────────────────────────────────
-  useEffect(() => {
-    const cy = cyRef.current;
-    if (!cy) return;
-
-    // Clear all previous tap handlers and reset state
-    cy.off('tap');
-    cy.nodes().removeClass('edge-src');
-    edgeSrcRef.current = null;
-    cy.autoungrabify(editMode === 'delete');
-
-    if (editMode === 'addNode') {
-      cy.on('tap', evt => {
-        if (evt.target !== cy) return; // only background taps
-        const label = nextLabel(cy);
-        cy.add({ group: 'nodes', data: { id: label, label }, position: evt.position });
-        syncUp(cy, onGraphChange);
-      });
-
-    } else if (editMode === 'addEdge') {
-      cy.on('tap', 'node', evt => {
-        const node = evt.target;
-        if (!edgeSrcRef.current) {
-          edgeSrcRef.current = node.id();
-          node.addClass('edge-src');
-        } else {
-          const src = edgeSrcRef.current;
-          const tgt = node.id();
-          cy.nodes().removeClass('edge-src');
-          edgeSrcRef.current = null;
-          if (src === tgt) return; // ignore self-loops
-          const id = `e${src}${tgt}${Date.now()}`;
-          cy.add({ group: 'edges', data: { id, source: src, target: tgt } });
-          syncUp(cy, onGraphChange);
-        }
-      });
-
-    } else if (editMode === 'delete') {
-      cy.on('tap', 'node', evt => { evt.target.remove(); syncUp(cy, onGraphChange); });
-      cy.on('tap', 'edge', evt => { evt.target.remove(); syncUp(cy, onGraphChange); });
-    }
-
-    return () => { cy.off('tap'); };
-  }, [editMode, onGraphChange, cyGen]);
+  useGraphEditMode(cyRef, editMode, onGraphChange, cyGen);
 
   // ── Sync node labels live (handles degree updates in edit mode) ──────────
   useEffect(() => {

@@ -5,7 +5,7 @@
 
 import { initBFS, stepBFS } from '../algorithms/BFS.js';
 import { initDFS, stepDFS } from '../algorithms/DFS.js';
-import { initFTD, stepFTD, initFTI, stepFTI } from '../algorithms/FTC.js';
+import { initFTD, stepFTD, initFTI, stepFTI } from '../algorithms/FT.js';
 import { initTopSort, stepTopSort } from '../algorithms/TopologicalSort.js';
 
 export const TRAVERSAL_ALGOS = ['BFS', 'DFS'];
@@ -19,6 +19,14 @@ export const ALGO_TITLES = {
   FTD:  'Fecho Transitivo Direto',
   FTI:  'Fecho Transitivo Indireto',
   TOPO: 'Ordenação Topológica',
+};
+
+export const ALGO_SUBTITLES = {
+  BFS:  ['Nó Descoberto', 'Ponta da Fila', 'Visitado / Fechado'],
+  DFS:  ['Nó Descoberto', 'Em Exploração', 'Visitado / Fechado'],
+  FTD:  ['Alvo Alcançável', 'Nó Atual', 'Expandido'],
+  FTI:  ['Predecessor', 'Nó Atual', 'Expandido'],
+  TOPO: ['Aresta Removida', 'Em Processamento', 'Ordenado'],
 };
 
 /**

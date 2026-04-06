@@ -1,103 +1,109 @@
-﻿# Arquitetura
+# Architecture
 
-O G-Visualizer usa uma arquitetura baseada em **estado imutável por passo**. Toda transição é uma função pura, o que torna o histórico de execução trivialmente implementável.
+G-Visualizer uses an architecture based on **per-step immutable state**. Every transition is a pure function, making execution history trivially implementable.
 
 ---
 
-## Estrutura do Projeto
+## Project Structure
 
 ```
 src/
 ├── algorithms/
 │   ├── BFS.js                # initBFS, stepBFS, buildAdjMap
 │   ├── DFS.js                # initDFS, stepDFS
-│   ├── FTC.js                # initFTD, stepFTD, initFTI, stepFTI
+│   ├── FT.js                 # initFTD, stepFTD, initFTI, stepFTI
+│   ├── TopologicalSort.js    # initTopSort, stepTopSort
 │   ├── connectivity.js       # findSCC, findConnectedComponents, findBridgesAndAPs
-│   └── traversal.js          # re-export barrel (compatibilidade retroativa)
+│   └── ...
 │
 ├── components/
-│   ├── GraphCanvas.jsx               # Canvas Cytoscape.js
-│   ├── ControlDeck.jsx               # Seletor de algoritmo e controles de execução
-│   ├── DataPanel.jsx                 # Fila/Pilha, visitados, ordem de visita
-│   ├── PseudocodePanel.jsx           # Pseudocódigo com linha ativa destacada
-│   ├── ConnectivityPanel.jsx         # Análise de conectividade
-│   ├── GraphRepresentationPanel.jsx  # Lista/Matriz de Adjacência/Incidência
-│   ├── GraphBuilder.jsx              # Editor de grafos
-│   └── ToastNotification.jsx         # Toasts contextuais
+│   ├── canvas/
+│   │   └── GraphCanvas.jsx   # Cytoscape.js Canvas
+│   ├── panels/
+│   │   ├── DataPanel.jsx     # Queue/Stack, visited, visit order
+│   │   ├── ConnectivityPanel.jsx # Connectivity analysis
+│   │   └── ...
+│   ├── visualizer/
+│   │   ├── Panels.jsx        # Sidebar panels (ControlSidebar, PlaybackBar)
+│   │   ├── VisualizerHeader.jsx # Algorithm selector and execution controls
+│   │   └── ...
+│   └── ...
 │
 ├── pages/
-│   ├── HomePage.jsx       # Landing page
-│   └── VisualizerPage.jsx # Visualizador principal
+│   ├── HomePage.jsx          # Landing page
+│   ├── AlgorithmsPage.jsx     # Algorithm library
+│   └── VisualizerPage.jsx    # Main visualizer
 │
 ├── context/
-│   └── ThemeContext.jsx   # Tema claro/escuro (localStorage)
+│   └── ThemeContext.jsx      # Light/dark theme (localStorage)
 │
 └── data/
-    └── presets.js         # 7 grafos pré-construídos
+    └── presets.js            # Pre-built graphs
 ```
 
 ---
 
-## Fluxo de Execução
+## Execution Flow
 
 ```
-Grafo (preset ou customizado)
+Graph (preset or custom)
         ↓
-  Nó inicial selecionado
+  Initial node selected
         ↓
-  Estado inicial criado  (initBFS / initDFS / initFTD / initFTI)
+  Initial state created (initBFS / initDFS / initFTD / initFTI / initTopSort)
         ↓
   ┌─────────────────────┐
-  │   Passo executado   │  ←── usuário clica "Passo" ou "Play"
+  │    Step executed    │  ←── user clicks "Step" or "Play"
   │  stepBFS / stepDFS  │
   │  stepFTD / stepFTI  │
   └─────────────────────┘
         ↓
-  Estado imutável salvo no histórico (Array de snapshots)
+  Immutable state saved in history (Array of snapshots)
         ↓
-  Canvas atualizado (Cytoscape.js classes)
-  DataPanel re-renderizado
-  PseudocodePanel realça linha ativa
-  Toast emitido (se eventType relevante)
+  Canvas updated (Cytoscape.js classes)
+  DataPanel re-rendered
+  Pseudocode highlights active line
+  Toast emitted (if eventType is relevant)
 ```
 
-A navegação retroativa ("Voltar") funciona simplesmente restaurando o último snapshot do array `history`.
+Backward navigation ("Back") works by simply restoring the last snapshot from the `history` array.
 
 ---
 
-## Classes Visuais no Canvas (Cytoscape.js)
+## Visual Classes on the Canvas (Cytoscape.js)
 
-| Classe CSS   | Cor      | Significado               |
+| CSS Class    | Color    | Meaning                   |
 |--------------|----------|---------------------------|
-| *(padrão)*   | Cinza    | Não visitado              |
-| `.frontier`  | Âmbar    | Na fila/pilha (fronteira) |
-| `.current`   | Violeta  | Sendo processado agora    |
-| `.visited`   | Verde    | Já visitado               |
-| `.comp-0..7` | Variadas | Componentes conexos       |
-| `.ap`        | Laranja  | Ponto de articulação      |
-| `.bridge`    | Vermelho | Aresta ponte              |
+| *(default)*  | Gray     | Not visited               |
+| `.frontier`  | Amber    | In queue/stack (frontier) |
+| `.current`   | Violet   | Being processed now       |
+| `.visited`   | Green    | Already visited           |
+| `.comp-0..7` | Various  | Connected components      |
+| `.ap`        | Orange   | Articulation point        |
+| `.bridge`    | Red      | Bridge edge               |
 
-As classes de algoritmo (`.frontier`, `.current`, `.visited`) e de conectividade (`.comp-*`, `.ap`, `.bridge`) são aplicadas em efeitos React separados, garantindo que não interfiram entre si.
+Algorithm classes (`.frontier`, `.current`, `.visited`) and connectivity classes (`.comp-*`, `.ap`, `.bridge`) are applied in separate React effects, ensuring they don't interfere with each other.
 
 ---
 
-## Rotas
+## Routes
 
-| Rota                    | Componente        | Descrição                            |
+| Route                    | Component        | Description                          |
 |-------------------------|-------------------|--------------------------------------|
 | `/`                     | `HomePage`        | Landing page                         |
-| `/visualizar/:algorithm`| `VisualizerPage`  | Visualizador (`BFS`, `DFS`, `FTD`, `FTI`) |
+| `/algoritmos`           | `AlgorithmsPage`  | Algorithm library                    |
+| `/visualizar/:algorithm`| `VisualizerPage`  | Visualizer (`BFS`, `DFS`, `FTD`, `FTI`, `TOPO`) |
 | `/visualizar`           | Redirect → `/visualizar/BFS` | |
 | `*`                     | Redirect → `/`   |                                      |
 
-O parâmetro `?preset=<key>` define o grafo inicial. `?preset=custom` ativa o editor.
+The `?preset=<key>` parameter defines the initial graph. `?preset=custom` activates the editor.
 
 ---
 
-## Sistema de Temas
+## Theme System
 
-`ThemeContext` gerencia o tema via `useState` com persistência em `localStorage('gv-theme')`. A classe `dark` é aplicada em `document.documentElement` e o TailwindCSS v4 usa `@custom-variant dark (&:where(.dark, .dark *))` para os seletores `dark:`.
+`ThemeContext` manages the theme via `useState` with persistence in `localStorage('gv-theme')`. The `dark` class is applied to `document.documentElement`, and TailwindCSS v4 uses `@custom-variant dark (&:where(.dark, .dark *))` for `dark:` selectors.
 
 ---
 
-← [Voltar ao README](../README.md)
+← [Back to README](../README.md)

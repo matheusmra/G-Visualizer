@@ -5,7 +5,7 @@
 
 export const PSEUDOCODE = {
   BFS: {
-    title: 'Busca em Largura — BFS',
+    title: 'Busca em Largura - BFS',
     lines: [
       'BFS(Grafo G, nó inicial s):',
       '  marcar s como visitado',
@@ -22,7 +22,7 @@ export const PSEUDOCODE = {
       'Explora o grafo nível por nível. Garante o caminho mais curto em grafos não-ponderados.',
   },
   DFS: {
-    title: 'Busca em Profundidade — DFS',
+    title: 'Busca em Profundidade - DFS',
     lines: [
       'DFS(Grafo G, nó inicial s):',
       '  P ← pilha vazia;  empilhar(P, s)',
@@ -39,7 +39,7 @@ export const PSEUDOCODE = {
       'Explora o grafo mergulhando o mais fundo possível antes de retroceder.',
   },
   FTD: {
-    title: 'Fecho Transitivo Direto — FTD',
+    title: 'Fecho Transitivo Direto - FTD',
     lines: [
       'FTD(Grafo G, nó s):',
       '  alcançáveis ← {s}',
@@ -56,7 +56,7 @@ export const PSEUDOCODE = {
       'Encontra todos os nós que podem ser alcançados a partir de s seguindo arestas de saída.',
   },
   TOPO: {
-    title: 'Ordenação Topológica — Kahn',
+    title: 'Ordenação Topológica - Kahn',
     lines: [
       'TOPO(Dígrafo G):',
       '  calcular grau_entrada de cada nó',
@@ -75,7 +75,7 @@ export const PSEUDOCODE = {
       'Ordena os nós de um dígrafo sem ciclos (DAG) de forma que toda aresta u→v tenha u antes de v. Usa o algoritmo de Kahn (BFS por grau de entrada).',
   },
   FTI: {
-    title: 'Fecho Transitivo Indireto — FTI',
+    title: 'Fecho Transitivo Indireto - FTI',
     lines: [
       'FTI(Grafo G, nó s):',
       '  predecessores ← {s}',

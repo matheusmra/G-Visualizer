@@ -13,7 +13,7 @@
  */
 
 import { useState, useCallback, useMemo, useRef } from 'react';
-import { ALGO_MAP } from '../constants/algorithms.js';
+import { ALGO_MAP, ALGO_IDS } from '../constants/algorithms.js';
 
 export function useAlgorithm(algo, adjMap, reverseMap, directedAdjMap) {
   const [algoState, setAlgoState] = useState(null);
@@ -25,12 +25,13 @@ export function useAlgorithm(algo, adjMap, reverseMap, directedAdjMap) {
 
   /** Initialise the algorithm from a given start node. */
   const start = useCallback((startNode) => {
+    if (!ALGO_IDS.includes(algo)) return; // Validation
     const entry = ALGO_MAP[algo];
     if (!entry || !startNode) return;
     setAlgoState(entry.init(startNode, maps));
     setHistory([]);
     skipShownRef.current = false;
-  }, [algo]);
+  }, [algo, maps]);
 
   /** Pure single-step function — also used by tickForInterval. */
   const advanceOne = useCallback(

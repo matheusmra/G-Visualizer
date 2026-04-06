@@ -20,8 +20,8 @@ export default function DataPanel({ algorithm, algoState }) {
         <Card title={lbl.frontier} type={lbl.frontierType}>
           <EmptyHint text="Selecione um nó inicial para começar." />
         </Card>
-        <Card title={lbl.visited}><EmptyHint text="—" /></Card>
-        <Card title={lbl.order}><EmptyHint text="—" /></Card>
+        <Card title={lbl.visited}><EmptyHint text="-" /></Card>
+        <Card title={lbl.order}><EmptyHint text="-" /></Card>
       </div>
     );
   }
@@ -68,7 +68,7 @@ export default function DataPanel({ algorithm, algoState }) {
       {/* Ordem / Fecho final */}
       <Card title={lbl.order} count={order.length} highlight={isClosure && algoState.done}>
         {order.length === 0 ? (
-          <EmptyHint text="—" />
+          <EmptyHint text="-" />
         ) : (
           <div className="flex flex-wrap gap-1 items-center">
             {order.map((id, i) => (
@@ -109,11 +109,11 @@ function ClosureInfo({ algorithm }) {
     <div className="rounded-xl p-3 border text-xs leading-relaxed border-[#e0e3e5] dark:border-slate-700 bg-[#f7f9fb] dark:bg-slate-800/60 text-[#515f74] dark:text-slate-400">
       {algorithm === 'FTD'
         ? <>
-            <span className="font-bold text-[#191c1e] dark:text-slate-200">Fecho Transitivo Direto</span> — encontra todos os nós
+            <span className="font-bold text-[#191c1e] dark:text-slate-200">Fecho Transitivo Direto</span> - encontra todos os nós
             alcançáveis a partir da origem seguindo arestas de saída.
           </>
         : <>
-            <span className="font-bold text-[#191c1e] dark:text-slate-200">Fecho Transitivo Indireto</span> — encontra todos os nós
+            <span className="font-bold text-[#191c1e] dark:text-slate-200">Fecho Transitivo Indireto</span> - encontra todos os nós
             que possuem um caminho até a origem (grafo invertido).
           </>
       }

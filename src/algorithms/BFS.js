@@ -1,8 +1,7 @@
 /**
- * Busca em Largura — BFS
+ * Breadth-First Search — BFS
  *
- * stepBFS avança o algoritmo UM passo e retorna o novo estado (imutável).
- * buildAdjMap constrói o mapa de adjacência não-dirigido.
+ * stepBFS advances the algorithm ONE step and returns the new immutable state.
  */
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
@@ -31,8 +30,8 @@ export function stepBFS(state, adjMap) {
     const unreachable = allNodes.filter(n => !state.visited.has(n));
     const eventType = unreachable.length > 0 ? 'done_unreachable' : 'done';
     const log = unreachable.length > 0
-      ? `BFS encerrada. Nó(s) [${unreachable.join(', ')}] não alcançáveis — o grafo pode ser desconexo.`
-      : `BFS concluída — todos os nós foram visitados. Ordem: ${state.order.join(' → ')}.`;
+      ? `BFS encerrada. Nó(s) [${unreachable.join(', ')}] não alcançáveis - o grafo pode ser desconexo.`
+      : `BFS concluída - todos os nós foram visitados. Ordem: ${state.order.join(' → ')}.`;
     return { ...state, done: true, current: null, stepLog: log, pseudoLines: [10], eventType, skippedNeighbors: [], stepCount: (state.stepCount ?? 0) + 1 };
   }
 
@@ -85,7 +84,7 @@ export function stepBFS(state, adjMap) {
   if (done) {
     const unreachable = Object.keys(adjMap).filter(n => !visited.has(n));
     if (unreachable.length > 0) {
-      log += ` BFS encerrada — nó(s) [${unreachable.join(', ')}] não são alcançáveis.`;
+      log += ` BFS encerrada - nó(s) [${unreachable.join(', ')}] não são alcançáveis.`;
       eventType   = 'done_unreachable';
       pseudoLines = [10];
     } else {
@@ -97,18 +96,3 @@ export function stepBFS(state, adjMap) {
   return { queue, visited, inFrontier, current, order, done, stepLog: log, pseudoLines, eventType, skippedNeighbors, stepCount: (state.stepCount ?? 0) + 1 };
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-/** Mapa de adjacência não-dirigido (ambas as direções). */
-export function buildAdjMap(elements) {
-  const adj = {};
-  for (const el of elements.nodes) adj[el.data.id] = [];
-  for (const el of elements.edges) {
-    const { source, target } = el.data;
-    if (!adj[source]) adj[source] = [];
-    if (!adj[target]) adj[target] = [];
-    adj[source].push(target);
-    adj[target].push(source);
-  }
-  return adj;
-}

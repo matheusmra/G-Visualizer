@@ -10,7 +10,7 @@ export {
   initFTI, stepFTI,
   buildDirectedAdjMap,
   buildReverseAdjMap,
-} from './FTC.js';
+} from './FT.js';
 export { initTopSort, stepTopSort } from './TopologicalSort.js';
 export {
   findSCC,
