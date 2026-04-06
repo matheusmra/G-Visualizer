@@ -81,6 +81,7 @@ const GraphCanvas = forwardRef(function GraphCanvas({
   // Incremented each time the canvas is destroyed+recreated so the editMode
   // effect re-runs and re-attaches tap handlers on the new cy instance.
   const [cyGen, setCyGen] = useState(0);
+  const [initError, setInitError] = useState(null);
 
   // Keep ref in sync with prop
   useEffect(() => { editModeRef.current = editMode; }, [editMode]);
@@ -95,17 +96,24 @@ const GraphCanvas = forwardRef(function GraphCanvas({
 
     if (cyRef.current) cyRef.current.destroy();
 
-    cyRef.current = cytoscape({
-      container: containerRef.current,
-      elements: [...elements.nodes, ...elements.edges],
-      style: buildStylesheet(isDirected ?? false),
-      layout,
-      userZoomingEnabled: true,
-      userPanningEnabled: true,
-      boxSelectionEnabled: false,
-      autoungrabify: false,
-    });
-    setCyGen(g => g + 1); // signal editMode effect to re-attach handlers
+    try {
+      cyRef.current = cytoscape({
+        container: containerRef.current,
+        elements: [...elements.nodes, ...elements.edges],
+        style: buildStylesheet(isDirected ?? false),
+        layout,
+        userZoomingEnabled: true,
+        userPanningEnabled: true,
+        boxSelectionEnabled: false,
+        autoungrabify: false,
+      });
+      setInitError(null);
+      setCyGen(g => g + 1); // signal editMode effect to re-attach handlers
+    } catch (err) {
+      console.error('Failed to initialize Cytoscape:', err);
+      setInitError(err);
+      cyRef.current = null;
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [elements, layout]);
 
@@ -251,10 +259,33 @@ const GraphCanvas = forwardRef(function GraphCanvas({
     editMode === 'addEdge' ? 'cell' :
     editMode === 'delete'  ? 'pointer' : 'grab';
 
+  if (initError) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-800/50 p-6 text-center border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-3xl">
+        <span className="material-symbols-outlined text-red-500 mb-3" style={{ fontSize: '48px' }}>report</span>
+        <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-2 font-headline">Falha na inicialização do Grafo</h3>
+        <p className="text-sm text-slate-600 dark:text-slate-400 max-w-[320px] mb-6">
+          Não foi possível renderizar o grafo. Isso pode ocorrer devido a dados de entrada inválidos ou restrições do navegador.
+        </p>
+        <div className="p-3 bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 rounded-xl mb-6 max-w-sm overflow-auto">
+          <code className="text-[10px] text-red-600 dark:text-red-400 font-mono">
+            {initError.message || String(initError)}
+          </code>
+        </div>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-6 py-2.5 bg-slate-800 hover:bg-slate-900 dark:bg-blue-600 dark:hover:bg-blue-700 text-white rounded-xl text-xs font-bold font-headline transition-all shadow-lg"
+        >
+          Recarregar página
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div
       ref={containerRef}
-      className="w-full h-full"
+      className="w-full h-full outline-none"
       style={{ minHeight: 420, cursor }}
     />
   );
