@@ -1,8 +1,8 @@
 /**
- * Fecho Transitivo Direto (FTD) e Fecho Transitivo Indireto (FTI).
+ * Direct Transitive Closure (FTD) and Indirect Transitive Closure (FTI).
  *
- * FTD → BFS sobre o adjMap dirigido  (arestas de saída u→v)
- * FTI → BFS sobre o adjMap invertido (arestas de entrada como saída)
+ * FTD → BFS on directed adjMap (outgoing edges u→v)
+ * FTI → BFS on reversed adjMap (incoming edges treated as outgoing)
  */
 
 import { stepBFS } from './BFS.js';
@@ -69,28 +69,3 @@ export function stepFTI(state, reverseMap) {
   return { ...next, stepLog: next.stepLog.replace(/^BFS/, 'FTI') };
 }
 
-// ─── Helpers para grafos dirigidos ───────────────────────────────────────────
-
-/** Adjmap dirigido: apenas arestas de saída (source → target). */
-export function buildDirectedAdjMap(elements) {
-  const adj = {};
-  for (const el of elements.nodes) adj[el.data.id] = [];
-  for (const el of elements.edges) {
-    const { source, target } = el.data;
-    if (!adj[source]) adj[source] = [];
-    adj[source].push(target);
-  }
-  return adj;
-}
-
-/** Adjmap invertido: arestas de entrada viram saída. Usado pelo FTI. */
-export function buildReverseAdjMap(elements) {
-  const adj = {};
-  for (const el of elements.nodes) adj[el.data.id] = [];
-  for (const el of elements.edges) {
-    const { source, target } = el.data;
-    if (!adj[target]) adj[target] = [];
-    adj[target].push(source);
-  }
-  return adj;
-}

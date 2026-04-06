@@ -107,7 +107,7 @@ export default function ConnectivityPanel({ elements, isDirected, onHighlight })
                   {result.bridges.map(edgeId => {
                     const edge = elements.edges.find(e => e.data.id === edgeId);
                     const label = edge
-                      ? `${edge.data.source} — ${edge.data.target}`
+                      ? `${edge.data.source} - ${edge.data.target}`
                       : edgeId;
                     return (
                       <div key={edgeId} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/40">

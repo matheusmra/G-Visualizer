@@ -1,65 +1,65 @@
-﻿# Painéis do Visualizador
+# Visualizer Panels
 
-O visualizador possui quatro abas na barra lateral direita.
-
----
-
-## Estruturas de Dados
-
-Exibe o estado interno do algoritmo em tempo real:
-
-- **Fila** (BFS / FTD / FTI) ou **Pilha** (DFS) com os nós atualmente enfileirados/empilhados
-- **Visitados** — conjunto de nós processados
-- **Ordem de Visita** — sequência completa acumulada de visitas
+The visualizer features four tabs in the right sidebar.
 
 ---
 
-## Pseudocódigo
+## Data Structures
 
-Pseudocódigo do algoritmo selecionado. A linha correspondente ao passo atual é destacada em índigo. Útil para correlacionar visualmente o que acontece no grafo com o código teórico.
+Displays the internal state of the algorithm in real-time:
+
+- **Queue** (BFS / FTD / FTI / TOPO) or **Stack** (DFS) — nodes currently queued or pushed onto the stack.
+- **Visited** — the set of nodes that have already been processed.
+- **Visit Order** — the complete accumulated sequence of visits.
 
 ---
 
-## Conectividade (Aula 09)
+## Pseudocode
 
-Análise estática do grafo atual. Acione "Analisar" para calcular e destacar os resultados no canvas.
+The pseudocode for the selected algorithm. The line corresponding to the current step is highlighted in indigo. This is useful for visually correlating what happens in the graph with the theoretical code.
 
-### Grafos Não-Dirigidos
+---
 
-| Análise               | Algoritmo | Resultado no Canvas                          |
+## Connectivity (Lecture 09)
+
+Static analysis of the current graph. Trigger "Analyze" to calculate and highlight the results on the canvas.
+
+### Undirected Graphs
+
+| Analysis              | Algorithm | Canvas Result                                |
 |-----------------------|-----------|----------------------------------------------|
-| Componentes Conexos   | DFS       | Cada componente recebe uma cor única         |
-| Pontes                | Tarjan    | Arestas ponte ficam vermelhas                |
-| Pontos de Articulação | Tarjan    | Nós articulação ganham borda laranja grossa  |
+| Connected Components  | DFS       | Each component receives a unique color       |
+| Bridges               | Tarjan    | Bridge edges turn red                        |
+| Articulation Points   | Tarjan    | Articulation nodes gain a thick orange border|
 
-### Grafos Dirigidos
+### Directed Graphs
 
-| Análise                     | Algoritmo | Resultado no Canvas                    |
+| Analysis                    | Algorithm | Canvas Result                          |
 |-----------------------------|-----------|----------------------------------------|
-| Componentes Conexos (SCCs)  | Kosaraju  | Cada SCC recebe uma cor única          |
+| Connected Components (SCCs) | Kosaraju  | Each SCC receives a unique color       |
 
-> Pontes e Pontos de Articulação são conceitos de grafos não-dirigidos e não são calculados para grafos dirigidos.
+> Bridges and Articulation Points are undirected graph concepts and are not calculated for directed graphs.
 
 ---
 
-## Grafo - Representações Matemáticas (Aula 04)
+## Graph - Mathematical Representations (Lecture 04)
 
-Alterne entre três representações do grafo desenhado. Atualiza automaticamente conforme o grafo é editado.
+Switch between three representations of the drawn graph. These update automatically as the graph is edited.
 
-### Lista de Adjacência
+### Adjacency List
 
-Cada nó lista seus vizinhos (não-dirigido) ou sucessores diretos (dirigido). Nós sem conexões exibem `∅`.
+Each node lists its neighbors (undirected) or direct successors (directed). Nodes with no connections display `∅`.
 
 ```
-A — B, C
-B — A, D
-C — A
-D — B
+A - B, C
+B - A, D
+C - A
+D - B
 ```
 
-### Matriz de Adjacência
+### Adjacency Matrix
 
-Matriz n×n onde o valor `1` indica que existe aresta da linha para a coluna. Em grafos não-dirigidos a matriz é simétrica.
+An $n \times n$ matrix where the value `1` indicates an edge from the row node to the column node. In undirected graphs, the matrix is symmetric.
 
 ```
   A B C D
@@ -69,9 +69,9 @@ C 1 0 0 0
 D 0 1 0 0
 ```
 
-### Matriz de Incidência
+### Incidence Matrix
 
-Matriz n×m (nós × arestas). Em grafos não-dirigidos cada célula é `1` se o nó é incidente à aresta. Em grafos dirigidos: `+1` para saída, `−1` para entrada.
+An $n \times m$ matrix (nodes $\times$ edges). In undirected graphs, each cell is `1` if the node is incident to the edge. In directed graphs: `+1` for outgoing edges, `-1` for incoming edges.
 
 ```
    e0 e1 e2
@@ -83,4 +83,4 @@ D   0  0  1
 
 ---
 
-← [Voltar ao README](../README.md)
+← [Back to README](../README.md)

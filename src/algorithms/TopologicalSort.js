@@ -1,15 +1,15 @@
 /**
- * Ordenação Topológica — Algoritmo de Kahn (BFS por grau de entrada)
+ * Topological Sort — Kahn's Algorithm (BFS based on in-degree)
  *
- * initTopSort(startNode, { directedAdjMap }) — inicializa a partir do grafo dirigido.
- * stepTopSort(state, directedAdjMap)         — avança um passo e retorna novo estado.
+ * initTopSort(startNode, { directedAdjMap }) — initializes from the directed graph.
+ * stepTopSort(state, directedAdjMap)         — advances one step and returns the new state.
  *
- * Em cada passo:
- *  1. Desenfilera o próximo nó de grau-de-entrada zero.
- *  2. Adiciona-o à ordem topológica.
- *  3. Decrementa o grau de entrada dos vizinhos; enfileira os que chegarem a zero.
+ * In each step:
+ *  1. Dequeue the next node with in-degree zero.
+ *  2. Add it to the topological order.
+ *  3. Decrement the in-degree of neighbors; enqueue those that reach zero.
  *
- * Se ao fim |ordem| < |nós| → ciclo detectado (não existe ordenação topológica).
+ * If at the end |order| < |nodes| → cycle detected (no topological sort exists).
  */
 
 // ─── Init ──────────────────────────────────────────────────────────────────────
@@ -17,7 +17,7 @@
 export function initTopSort(_startNode, { directedAdjMap }) {
   const nodes = Object.keys(directedAdjMap);
 
-  // Calcular grau de entrada de cada nó
+  // Calculate the in-degree of each node
   const inDegree = {};
   nodes.forEach(n => { inDegree[n] = 0; });
   nodes.forEach(n => {
@@ -42,7 +42,7 @@ export function initTopSort(_startNode, { directedAdjMap }) {
       ? `Ordenação topológica iniciada. Nós com grau de entrada 0: [${queue.join(', ')}].`
       : nodes.length === 0
         ? 'Grafo vazio.'
-        : 'Nenhum nó com grau de entrada 0 — ciclo detectado antes do início.',
+        : 'Nenhum nó com grau de entrada 0 - ciclo detectado antes do início.',
     pseudoLines:       [2, 3],
     eventType:         'init',
     skippedNeighbors:  [],
@@ -59,7 +59,7 @@ export function stepTopSort(state, directedAdjMap) {
     const totalNodes = Object.keys(directedAdjMap).length;
     const cycleDetected = state.order.length < totalNodes;
     const log = cycleDetected
-      ? `Ordenação encerrada com ciclo detectado. Apenas ${state.order.length} de ${totalNodes} nós foram ordenados — o grafo contém um ciclo.`
+      ? `Ordenação encerrada com ciclo detectado. Apenas ${state.order.length} de ${totalNodes} nós foram ordenados - o grafo contém um ciclo.`
       : `Ordenação topológica concluída. Ordem: ${state.order.join(' → ')}.`;
     return {
       ...state,
@@ -103,7 +103,7 @@ export function stepTopSort(state, directedAdjMap) {
 
   if (cycleDetected) {
     const totalNodes = Object.keys(directedAdjMap).length;
-    log = `Processando "${current}": fila vazia mas ${totalNodes - order.length} nó(s) ainda não processado(s) — ciclo detectado.`;
+    log = `Processando "${current}": fila vazia mas ${totalNodes - order.length} nó(s) ainda não processado(s) - ciclo detectado.`;
     eventType   = 'done_cycle';
     pseudoLines = [11];
   } else if (done) {
@@ -111,7 +111,7 @@ export function stepTopSort(state, directedAdjMap) {
     eventType   = 'done';
     pseudoLines = [12];
   } else if (newlyEnqueued.length > 0) {
-    log = `Processando "${current}": grau de entrada de [${newlyEnqueued.join(', ')}] chegou a 0 — enfileirado(s).`;
+    log = `Processando "${current}": grau de entrada de [${newlyEnqueued.join(', ')}] chegou a 0 - enfileirado(s).`;
     eventType   = 'step';
     pseudoLines = [6, 7, 8, 9, 10];
   } else {

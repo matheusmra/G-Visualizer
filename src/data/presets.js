@@ -178,5 +178,31 @@ export const PRESETS = {
     },
     layout: { name: 'concentric', concentric: n => (n.id() === 'S' ? 2 : 1), levelWidth: () => 1, padding: 40 },
   },
+
+  dag: {
+    name: 'Grafo Acíclico (DAG)',
+    description: 'Grafo direcionado sem ciclos, perfeito para testar ordenação topológica.',
+    directed: true,
+    elements: {
+      nodes: [
+        { data: { id: 'A', label: 'A' } },
+        { data: { id: 'B', label: 'B' } },
+        { data: { id: 'C', label: 'C' } },
+        { data: { id: 'D', label: 'D' } },
+        { data: { id: 'E', label: 'E' } },
+        { data: { id: 'F', label: 'F' } },
+      ],
+      edges: [
+        { data: { source: 'A', target: 'B' } },
+        { data: { source: 'A', target: 'C' } },
+        { data: { source: 'B', target: 'D' } },
+        { data: { source: 'B', target: 'E' } },
+        { data: { source: 'C', target: 'E' } },
+        { data: { source: 'D', target: 'F' } },
+        { data: { source: 'E', target: 'F' } },
+      ],
+    },
+    layout: { name: 'breadthfirst', directed: true, roots: ['A'], padding: 40 },
+  },
 };
 

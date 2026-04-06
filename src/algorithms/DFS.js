@@ -1,7 +1,7 @@
 /**
- * Busca em Profundidade — DFS
+ * Depth-First Search — DFS
  *
- * stepDFS avança o algoritmo UM passo e retorna o novo estado (imutável).
+ * stepDFS advances the algorithm ONE step and returns the new immutable state.
  */
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
@@ -30,8 +30,8 @@ export function stepDFS(state, adjMap) {
     const unreachable = allNodes.filter(n => !state.visited.has(n));
     const eventType = unreachable.length > 0 ? 'done_unreachable' : 'done';
     const log = unreachable.length > 0
-      ? `DFS encerrada. Nó(s) [${unreachable.join(', ')}] não alcançáveis — o grafo pode ser desconexo.`
-      : `DFS concluída — todos os nós foram visitados. Ordem: ${state.order.join(' → ')}.`;
+      ? `DFS encerrada. Nó(s) [${unreachable.join(', ')}] não alcançáveis - o grafo pode ser desconexo.`
+      : `DFS concluída - todos os nós foram visitados. Ordem: ${state.order.join(' → ')}.`;
     return { ...state, done: true, current: null, stepLog: log, pseudoLines: [10], eventType, skippedNeighbors: [], stepCount: (state.stepCount ?? 0) + 1 };
   }
 
@@ -40,7 +40,7 @@ export function stepDFS(state, adjMap) {
   const inFrontier = new Set(state.inFrontier);
   const order      = [...state.order];
 
-  // Desempilha e pula nós já visitados (duplicatas na pilha)
+  // Pop and skip already visited nodes (duplicates on stack)
   let current;
   do {
     if (stack.length === 0) {
@@ -97,7 +97,7 @@ export function stepDFS(state, adjMap) {
   if (done) {
     const unreachable = Object.keys(adjMap).filter(n => !visited.has(n));
     if (unreachable.length > 0) {
-      log += ` DFS encerrada — nó(s) [${unreachable.join(', ')}] não são alcançáveis.`;
+      log += ` DFS encerrada - nó(s) [${unreachable.join(', ')}] não são alcançáveis.`;
       eventType   = 'done_unreachable';
       pseudoLines = [10];
     } else {

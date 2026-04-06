@@ -1,10 +1,8 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { useParams, useSearchParams, Link } from 'react-router-dom';
-import { useTheme } from '../context/ThemeContext.jsx';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import GraphCanvas from '../components/canvas/GraphCanvas.jsx';
 import DataPanel from '../components/panels/DataPanel.jsx';
 import PseudocodePanel from '../components/panels/PseudocodePanel.jsx';
-import { ToastContainer } from '../components/ui/ToastNotification.jsx';
 import ConnectivityPanel from '../components/panels/ConnectivityPanel.jsx';
 import GraphRepresentationPanel from '../components/panels/GraphRepresentationPanel.jsx';
 import { useAlgorithm } from '../hooks/useAlgorithm.js';
@@ -12,27 +10,22 @@ import { usePlayback } from '../hooks/usePlayback.js';
 import { useGraphPreset } from '../hooks/useGraphPreset.js';
 import { buildAdjMap, buildDirectedAdjMap, buildReverseAdjMap } from '../utils/graphHelpers.js';
 import { ALGO_IDS, ALGO_TITLES } from '../constants/algorithms.js';
-import { PRESETS } from '../data/presets.js';
+import { ALGO_DEFAULT_PRESET } from '../data/algorithms.js';
 import ErrorBoundary from '../components/ui/ErrorBoundary.jsx';
-
-const ALGO_SUBTITLES = {
-  BFS:  'Travessia por nível com fila FIFO',
-  DFS:  'Exploração recursiva em profundidade',
-  FTD:  'Todos os nós alcançáveis a partir da origem',
-  FTI:  'Todos os predecessores da origem (arestas invertidas)',
-  TOPO: 'Ordenação linear de grafos acíclicos dirigidos',
-};
-
-let toastId = 0;
+import { VisualizerHeader } from '../components/visualizer/VisualizerHeader.jsx';
+import { ControlSidebar, PlaybackBar } from '../components/visualizer/Panels.jsx';
+import { useToasts } from '../hooks/useToasts.jsx';
 
 export default function VisualizerPage() {
+  const navigate = useNavigate();
   const { algorithm: algoParam }        = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // ── Algorithm selector ────────────────────────────────────────────────────
-  const [algorithm, setAlgorithm] = useState(
+  // ── Algorithm selector (URL as source of truth) ───────────────────────────
+  const algorithm = useMemo(() => 
     ALGO_IDS.includes(algoParam) ? algoParam : 'BFS'
-  );
+  , [algoParam]);
+  
   const [startNode, setStartNode] = useState('');
 
   // ── Graph preset / custom graph ───────────────────────────────────────────
@@ -44,6 +37,8 @@ export default function VisualizerPage() {
     isCustom, currentElements, currentLayout, currentIsDirected,
     nodeIds, handleGraphChange, handleClearGraph,
   } = useGraphPreset(searchParams.get('preset') ?? 'cyclic', setSearchParams);
+
+  const nodeIdsKey = nodeIds.join(',');
 
   // ── Adjacency maps (derived) ──────────────────────────────────────────────
   const adjMap = useMemo(
@@ -79,15 +74,25 @@ export default function VisualizerPage() {
   useEffect(() => {
     pause();
     reset();
+    // Pre-select first node if current startNode is gone
+    if (nodeIds.length > 0 && !nodeIds.includes(startNode)) {
+      setStartNode(nodeIds[0]);
+    } else if (nodeIds.length === 0) {
+      setStartNode('');
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [algorithm]);
+  }, [nodeIdsKey, algorithm]);
 
   // ── UI ────────────────────────────────────────────────────────────────────
-  const [rightPanel, setRightPanel] = useState('data');
-  const [toasts,     setToasts]     = useState([]);
+  const { toasts, addToast, ToastContainer } = useToasts();
   const [connectivityHighlight, setConnectivityHighlight] = useState(null);
 
   const handleReset = useCallback(() => { pause(); reset(); }, [pause, reset]);
+
+  const handleAlgoChange = useCallback((newAlgo) => {
+    const defaultPreset = ALGO_DEFAULT_PRESET[newAlgo] ?? 'cyclic';
+    navigate(`/visualizar/${newAlgo}?preset=${defaultPreset}`);
+  }, [navigate]);
 
   // ── Degree-enriched elements (for canvas labels) ──────────────────────────
   const enrichedElements = useMemo(() => {
@@ -109,16 +114,6 @@ export default function VisualizerPage() {
     };
   }, [currentElements, currentIsDirected]);
 
-  // ── Toast helpers ─────────────────────────────────────────────────────────
-  const addToast = useCallback(({ type, title, message, duration }) => {
-    const id = ++toastId;
-    setToasts(t => [...t, { id, type, title, message, duration }]);
-  }, []);
-
-  const dismissToast = useCallback(id => {
-    setToasts(t => t.filter(x => x.id !== id));
-  }, []);
-
   // ── Contextual toasts ─────────────────────────────────────────────────────
   useEffect(() => {
     if (!algoState || algoState.eventType === 'init') return;
@@ -131,7 +126,7 @@ export default function VisualizerPage() {
       addToast({
         type:    'info',
         title:   'Nó já descoberto',
-        message: `Vizinho(s) "${names}" encontrado(s) mas já ${skippedNeighbors?.length === 1 ? 'havia' : 'haviam'} sido marcado(s) como visitado(s) — ignorado(s) para evitar revisita.`,
+        message: `Vizinho(s) "${names}" encontrado(s) mas já ${skippedNeighbors?.length === 1 ? 'havia' : 'haviam'} sido marcado(s) como visitado(s) - ignorado(s) para evitar revisita.`,
         duration: 6000,
       });
     }
@@ -149,7 +144,7 @@ export default function VisualizerPage() {
       addToast({
         type:    'error',
         title:   'Ciclo detectado',
-        message: `Ordenação topológica impossível — o grafo contém um ciclo. Apenas ${order?.length ?? 0} nó(s) foram ordenados.`,
+        message: `Ordenação topológica impossível - o grafo contém um ciclo. Apenas ${order?.length ?? 0} nó(s) foram ordenados.`,
         duration: 8000,
       });
     }
@@ -182,7 +177,6 @@ export default function VisualizerPage() {
   }, [handleClearGraph, reset]);
 
   // ── Clear connectivity highlight when graph structure changes ─────────────
-  const nodeIdsKey = nodeIds.join(',');
   useEffect(() => {
     setConnectivityHighlight(null);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -212,207 +206,24 @@ export default function VisualizerPage() {
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-white dark:bg-slate-950 text-[#191c1e] dark:text-slate-100">
 
-      {/* ── Header ── */}
-      <header className="h-14 shrink-0 border-b border-[#e0e3e5] dark:border-slate-800 flex items-center px-6 gap-4 bg-white dark:bg-slate-950">
-        <Link
-          to="/"
-          className="text-xl font-bold tracking-tight font-headline text-[#191c1e] dark:text-slate-50 shrink-0 hover:text-[#004ac6] dark:hover:text-blue-400 transition-colors"
-        >
-          G Visualizer
-        </Link>
-        <div className="w-px h-5 bg-[#e0e3e5] dark:bg-slate-700" />
-
-        {/* ── Algorithm tabs ── */}
-        <nav className="flex items-center gap-1 flex-1">
-          {ALGO_IDS.map(alg => (
-            <button
-              key={alg}
-              onClick={() => setAlgorithm(alg)}
-              title={ALGO_TITLES[alg]}
-              className={`px-3.5 py-1.5 text-sm font-bold font-headline transition-colors rounded-none border-b-2 ${
-                algorithm === alg
-                  ? 'text-[#004ac6] dark:text-blue-400 border-[#004ac6] dark:border-blue-400'
-                  : 'text-[#515f74] dark:text-slate-400 border-transparent hover:text-[#004ac6] dark:hover:text-blue-300 hover:border-[#004ac6]/30'
-              }`}
-            >
-              {alg}
-            </button>
-          ))}
-        </nav>
-
-        {/* ── Right actions ── */}
-        <ThemeToggle />
-      </header>
-
+      <VisualizerHeader 
+        algoDetails={{ id: algorithm, name: ALGO_TITLES[algorithm], abbr: algorithm, difficulty: 'Médio', icon: 'hub' }} 
+        currentAlgo={algorithm} 
+        onAlgoChange={handleAlgoChange} 
+      />
       {/* ── Body ── */}
       <div className="flex min-h-0 flex-1 overflow-hidden">
 
-        {/* ── Left sidebar ── */}
-        <aside className="w-52 shrink-0 border-r border-[#e0e3e5] dark:border-slate-800 flex flex-col bg-white dark:bg-slate-950 overflow-hidden">
-          <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
-
-            {/* Section label */}
-            <div>
-              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#004ac6] dark:text-blue-400">Interação</p>
-              <p className="text-[10px] tracking-widest uppercase text-[#737686] dark:text-slate-500 mt-0.5">Ferramentas</p>
-            </div>
-
-            {/* Graph selector */}
-            <div>
-              <label className="text-[10px] tracking-widest uppercase text-[#737686] dark:text-slate-500 block mb-1.5">
-                Grafo atual
-              </label>
-              <select
-                value={presetKey}
-                onChange={e => setPresetKey(e.target.value)}
-                className="w-full bg-[#f2f4f6] dark:bg-slate-800 border border-[#c3c6d7]/50 dark:border-slate-700 text-[#191c1e] dark:text-slate-200 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-[#004ac6] dark:focus:border-blue-500"
-              >
-                {Object.entries(PRESETS).map(([key, p]) => (
-                  <option key={key} value={key}>{p.name}</option>
-                ))}
-                <option value="custom">Grafo Customizado</option>
-              </select>
-            </div>
-
-            {/* Edit tools */}
-            <div className="flex flex-col gap-1.5">
-              {!isCustom ? (
-                <>
-                  <button
-                    onClick={handleActivatePresetEdit}
-                    className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-[#c3c6d7]/50 dark:border-slate-700 text-[#515f74] dark:text-slate-400 hover:border-[#004ac6] hover:text-[#004ac6] dark:hover:text-blue-400 hover:bg-[#f0f4ff] dark:hover:bg-blue-950/30 transition-all text-xs font-medium bg-[#f7f9fb] dark:bg-slate-800/60"
-                  >
-                    <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>edit</span>
-                    Ativar Modo Edição
-                  </button>
-                  <div className="flex items-center gap-2 px-3 py-2 opacity-40 cursor-not-allowed">
-                    <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>lock</span>
-                    <span className="text-xs text-[#515f74] dark:text-slate-400">Ferramentas bloqueadas</span>
-                  </div>
-                </>
-              ) : (
-                <>
-                  {[
-                    { id: 'addNode', label: 'Adicionar Nó',     icon: 'add_circle' },
-                    { id: 'addEdge', label: 'Adicionar Aresta', icon: 'timeline' },
-                    { id: 'delete',  label: 'Excluir',          icon: 'backspace' },
-                  ].map(t => (
-                    <button
-                      key={t.id}
-                      onClick={() => setEditMode(editMode === t.id ? null : t.id)}
-                      className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-medium transition-all border ${
-                        editMode === t.id
-                          ? 'bg-[#004ac6] text-white border-[#004ac6] shadow-sm shadow-[#004ac6]/30'
-                          : 'bg-[#f7f9fb] dark:bg-slate-800/60 text-[#515f74] dark:text-slate-400 border-[#c3c6d7]/50 dark:border-slate-700 hover:border-[#004ac6] hover:text-[#004ac6] dark:hover:text-blue-400'
-                      }`}
-                    >
-                      <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>{t.icon}</span>
-                      {t.label}
-                    </button>
-                  ))}
-                  <button
-                    onClick={handleClearGraphWithReset}
-                    className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-medium border bg-[#f7f9fb] dark:bg-slate-800/60 text-[#515f74] dark:text-slate-400 border-[#c3c6d7]/50 dark:border-slate-700 hover:border-red-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all"
-                  >
-                    <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>delete_sweep</span>
-                    Limpar Canvas
-                  </button>
-                  <button
-                    onClick={handleRandomize}
-                    className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-medium border bg-[#f7f9fb] dark:bg-slate-800/60 text-[#515f74] dark:text-slate-400 border-[#c3c6d7]/50 dark:border-slate-700 hover:border-[#004ac6] hover:text-[#004ac6] dark:hover:text-blue-400 transition-all"
-                  >
-                    <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>shuffle</span>
-                    Aleatorizar
-                  </button>
-                </>
-              )}
-            </div>
-
-            <div className="h-px bg-[#e0e3e5] dark:bg-slate-800" />
-
-            {/* Start node */}
-            {nodeIds.length > 0 && (
-              <div>
-                <label className="text-[10px] tracking-widest uppercase text-[#737686] dark:text-slate-500 block mb-1.5">
-                  Nó Inicial
-                </label>
-                <select
-                  value={startNode}
-                  onChange={e => setStartNode(e.target.value)}
-                  disabled={!!algoState}
-                  className="w-full bg-[#f2f4f6] dark:bg-slate-800 border border-[#c3c6d7]/50 dark:border-slate-700 text-[#191c1e] dark:text-slate-200 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-[#004ac6] disabled:opacity-40"
-                >
-                  {nodeIds.map(id => <option key={id} value={id}>{id}</option>)}
-                </select>
-              </div>
-            )}
-
-            {/* Start / Reset */}
-            {!algoState ? (
-              <button
-                onClick={() => start(startNode || nodeIds[0])}
-                disabled={nodeIds.length === 0}
-                className="w-full py-2.5 rounded-xl text-xs font-bold font-headline bg-[#004ac6] hover:bg-[#2563eb] text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors shadow-sm shadow-[#004ac6]/20"
-              >
-                Iniciar
-              </button>
-            ) : (
-              <button
-                onClick={handleReset}
-                className="w-full py-2.5 rounded-xl text-xs font-bold font-headline bg-[#f2f4f6] dark:bg-slate-800 text-[#515f74] dark:text-slate-300 border border-[#c3c6d7]/50 dark:border-slate-700 hover:bg-[#e0e3e5] dark:hover:bg-slate-700 transition-colors"
-              >
-                Resetar
-              </button>
-            )}
-
-            {/* Speed */}
-            <div>
-              <label className="text-[10px] tracking-widest uppercase text-[#737686] dark:text-slate-500 block mb-1.5">
-                Velocidade
-              </label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="range"
-                  min={100}
-                  max={2000}
-                  step={100}
-                  value={2100 - speed}
-                  onChange={e => setSpeed(2100 - Number(e.target.value))}
-                  className="flex-1 h-1 accent-[#004ac6]"
-                />
-                <span className="text-[10px] text-[#737686] dark:text-slate-500 w-10 text-right shrink-0">{speed}ms</span>
-              </div>
-            </div>
-
-            {/* Empty graph hint */}
-            {nodeIds.length === 0 && (
-              <p className="text-[10px] text-[#737686] dark:text-slate-500 italic leading-relaxed">
-                Adicione nós para começar ou escolha um grafo pré-carregado.
-              </p>
-            )}
-          </div>
-
-          {/* Progress — pinned to bottom */}
-          <div className="shrink-0 border-t border-[#e0e3e5] dark:border-slate-800 p-4">
-            <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-[#737686] dark:text-slate-500 mb-2">
-              Progresso
-            </p>
-            <div className="h-1 bg-[#e0e3e5] dark:bg-slate-800 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-[#004ac6] rounded-full transition-all duration-500"
-                style={{ width: isDone ? '100%' : algoState ? `${Math.min(history.length * 5, 88)}%` : '0%' }}
-              />
-            </div>
-            <p className="mt-1.5 text-xs text-[#515f74] dark:text-slate-400">
-              {algoState
-                ? isDone
-                  ? `Concluído · ${history.length + 1} passos`
-                  : `Passo ${history.length + 1}`
-                : nodeIds.length === 0 ? 'Adicione nós' : 'Não iniciado'}
-            </p>
-          </div>
-        </aside>
-
+        <ControlSidebar
+            presetKey={presetKey} setPresetKey={setPresetKey}
+            isCustom={isCustom} editMode={editMode} setEditMode={setEditMode}
+            isDirected={currentIsDirected} setIsDirected={setIsDirected}
+            handleActivatePresetEdit={handleActivatePresetEdit} handleClearGraphWithReset={handleClearGraphWithReset} handleRandomize={handleRandomize}
+            nodeIds={nodeIds} startNode={startNode} setStartNode={setStartNode}
+            algoState={algoState} start={start} handleReset={handleReset}
+            speed={speed} setSpeed={setSpeed}
+            isDone={isDone} history={history}
+        />
         {/* ── Center canvas ── */}
         <main className="flex-1 min-w-0 relative overflow-hidden bg-[#f2f4f6] dark:bg-slate-900">
           {/* Dot-grid background */}
@@ -424,7 +235,7 @@ export default function VisualizerPage() {
               {ALGO_TITLES[algorithm]}
             </h2>
             <p className="text-sm text-[#515f74] dark:text-slate-400 mt-0.5">
-              {ALGO_SUBTITLES[algorithm]}
+              
             </p>
           </div>
 
@@ -464,62 +275,22 @@ export default function VisualizerPage() {
             />
           </ErrorBoundary>
 
-          {/* Floating playback controls */}
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10">
-            <div className="glass-panel px-6 py-3.5 rounded-2xl flex items-center gap-5 shadow-xl border border-white/60 dark:border-slate-700/50">
-              {/* Step back */}
-              <button
-                onClick={stepBackward}
-                disabled={!canBack}
-                className="text-[#515f74] dark:text-slate-400 hover:text-[#004ac6] dark:hover:text-blue-400 disabled:opacity-25 disabled:cursor-not-allowed transition-colors"
-                title="Voltar um passo"
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: '28px' }}>skip_previous</span>
-              </button>
-
-              {/* Play / Pause */}
-              {!isPlaying ? (
-                <button
-                  onClick={() => { if (!algoState) start(startNode || nodeIds[0]); play(); }}
-                  disabled={isDone || nodeIds.length === 0}
-                  className="w-12 h-12 rounded-full bg-[#004ac6] hover:bg-[#2563eb] text-white flex items-center justify-center shadow-lg shadow-[#004ac6]/30 disabled:opacity-30 disabled:cursor-not-allowed transition-all hover:scale-105"
-                  title="Executar"
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: '26px', fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
-                </button>
-              ) : (
-                <button
-                  onClick={pause}
-                  className="w-12 h-12 rounded-full bg-[#004ac6] text-white flex items-center justify-center shadow-lg shadow-[#004ac6]/30 hover:scale-105 transition-all"
-                  title="Pausar"
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: '26px', fontVariationSettings: "'FILL' 1" }}>pause</span>
-                </button>
-              )}
-
-              {/* Step forward */}
-              <button
-                onClick={stepForward}
-                disabled={!canStep || isPlaying}
-                className="text-[#515f74] dark:text-slate-400 hover:text-[#004ac6] dark:hover:text-blue-400 disabled:opacity-25 disabled:cursor-not-allowed transition-colors"
-                title="Avançar um passo"
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: '28px' }}>skip_next</span>
-              </button>
-
-              <div className="w-px h-7 bg-[#c3c6d7]/60 dark:bg-slate-600" />
-
-              {/* Step counter */}
-              <div className="text-center min-w-[52px]">
-                <span className="text-[9px] font-bold tracking-[0.15em] text-[#737686] dark:text-slate-500 uppercase block">
-                  {isDone ? 'Fim' : 'Passo'}
-                </span>
-                <span className="text-sm font-mono font-bold text-[#004ac6] dark:text-blue-400">
-                  {algoState ? String(history.length + 1).padStart(2, '0') : '—'}
-                </span>
-              </div>
-            </div>
-          </div>
+          {/* Playback Controls (Componentized) */}
+          <PlaybackBar 
+            stepBackward={stepBackward} 
+            canBack={history.length > 0} 
+            isPlaying={isPlaying} 
+            algoState={algoState} 
+            start={start} 
+            startNode={startNode} 
+            nodeIds={nodeIds} 
+            isDone={isDone} 
+            play={play} 
+            pause={pause} 
+            stepForward={stepForward} 
+            canStep={!isDone && !isPlaying} 
+            history={history} 
+          />
         </main>
 
         {/* ── Right panel ── */}
@@ -553,7 +324,7 @@ export default function VisualizerPage() {
         </aside>
       </div>
 
-      <ToastContainer toasts={toasts} onDismiss={dismissToast} />
+      <ToastContainer />
     </div>
   );
 }
@@ -572,21 +343,5 @@ function RightSection({ icon, title, children }) {
         {children}
       </div>
     </div>
-  );
-}
-
-/* ── Theme toggle ────────────────────────────────────────────────────────── */
-function ThemeToggle() {
-  const { theme, toggleTheme } = useTheme();
-  return (
-    <button
-      onClick={toggleTheme}
-      className="p-2 rounded-xl bg-[#f2f4f6] dark:bg-slate-800 text-[#515f74] dark:text-slate-400 hover:bg-[#e0e3e5] dark:hover:bg-slate-700 transition-colors"
-      title="Alternar tema"
-    >
-      <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
-        {theme === 'dark' ? 'light_mode' : 'dark_mode'}
-      </span>
-    </button>
   );
 }

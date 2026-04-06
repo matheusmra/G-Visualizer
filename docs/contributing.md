@@ -1,10 +1,10 @@
-﻿# Contribuindo
+# Contributing
 
-Contribuições são bem-vindas! Seja corrigindo um bug, adicionando um algoritmo ou melhorando a interface.
+Contributions are welcome! Whether it's fixing a bug, adding an algorithm, or improving the UI.
 
 ---
 
-## Configuração do Ambiente
+## Environment Setup
 
 ```bash
 git clone https://github.com/matheusmra/G-Visualizer.git
@@ -15,26 +15,27 @@ npm run dev
 
 ---
 
-## Como Adicionar um Novo Algoritmo
+## How to Add a New Algorithm
 
-1. Crie um arquivo em `src/algorithms/MeuAlgo.js`
-2. Exporte as funções `initMeuAlgo(startNode)` e `stepMeuAlgo(state, adjMap)`
-3. O estado retornado deve seguir a estrutura padrão (ver [docs/algorithms.md](algorithms.md#estado-do-algoritmo-campos-comuns))
-4. Adicione a entrada em `ControlDeck.jsx` (array `TRAVERSAL_ALGOS` ou `CLOSURE_ALGOS`)
-5. Registre o `init*` e `step*` em `VisualizerPage.jsx` nos switches `handleStart` e `advanceOne`
-6. Adicione o pseudocódigo em `PseudocodePanel.jsx`
+1. Create a file in `src/algorithms/MyAlgo.js`.
+2. Export the `initMyAlgo(startNode)` and `stepMyAlgo(state, maps)` functions.
+3. The returned state must follow the standard structure (see [docs/algorithms.md](algorithms.md#algorithm-state-common-fields)).
+4. Add the algorithm metadata to `src/data/algorithms.js` and a default preset to `ALGO_DEFAULT_PRESET`.
+5. Register the `init` and `step` functions in `src/constants/algorithms.js` within the `ALGO_MAP` object.
+6. Add the pseudocode to `src/constants/pseudocode.js`.
+7. If needed, update the logic for data displays in `src/components/panels/DataPanel.jsx`.
 
 ---
 
-## Como Adicionar um Novo Preset
+## How to Add a New Preset
 
-Edite `src/data/presets.js` e adicione uma nova entrada no objeto `PRESETS`:
+Edit `src/data/presets.js` and add a new entry to the `PRESETS` object:
 
 ```js
-meuGrafo: {
-  name: 'Nome do Grafo',
-  description: 'Descrição breve.',
-  directed: false, // ou true
+myGraph: {
+  name: 'Graph Name',
+  description: 'Brief description.',
+  directed: false, // or true
   elements: {
     nodes: [
       { data: { id: 'A', label: 'A' } },
@@ -45,32 +46,32 @@ meuGrafo: {
       // ...
     ],
   },
-  layout: { name: 'cose' }, // qualquer layout do Cytoscape.js
+  layout: { name: 'cose' }, // any Cytoscape.js layout
 },
 ```
 
-O preset aparecerá automaticamente na biblioteca da homepage e no visualizador.
+The preset will automatically appear in the homepage library and the visualizer dropdown.
 
 ---
 
-## Estrutura de Commits
+## Commit Structure
 
-Use mensagens de commit claras:
+Use clear commit messages:
 
 ```
-feat: adicionando algoritmo de Dijkstra
-fix: corrigi ordenação dos vizinhos no DFS
-docs: atualizando README com novos painéis
-style: troquei a cor de um botão
+feat: add Dijkstra algorithm
+fix: correct neighbor sorting in DFS
+docs: update README with new panels
+style: change button color
 ```
 
 ---
 
-## Issues e Pull Requests
+## Issues and Pull Requests
 
-- Abra uma [issue](https://github.com/matheusmra/G-Visualizer/issues) para reportar bugs ou propor funcionalidades
-- Fork o repositório, crie uma branch descritiva e abra um Pull Request
+- Open an [issue](https://github.com/matheusmra/G-Visualizer/issues) to report bugs or propose features.
+- Fork the repository, create a descriptive branch, and open a Pull Request.
 
 ---
 
-← [Voltar ao README](../README.md)
+← [Back to README](../README.md)

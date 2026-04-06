@@ -1,4 +1,4 @@
-﻿# G-Visualizer
+# G-Visualizer
 
 ![React](https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-5-646cff?logo=vite&logoColor=white)
@@ -6,47 +6,48 @@
 ![Cytoscape.js](https://img.shields.io/badge/Cytoscape.js-3-f79a25)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-Uma ferramenta educacional interativa para visualizar algoritmos de grafos passo a passo.
+An interactive educational tool for visualizing graph algorithms step-by-step.
 
-> **Projeto em desenvolvimento ativo.** Contribuições são bem-vindas. Abra uma issue com sugestões ou bugs!
-
----
-
-## Visão Geral
-
-O G-Visualizer permite que estudantes **vejam cada passo de um algoritmo de grafos acontecendo** no canvas, com estruturas de dados e pseudocódigo sempre sincronizados.
-
-A abordagem central é o **estado imutável por passo**: toda transição de estado é uma função pura, o que permite navegar para frente e para trás na execução como um depurador visual.
-
-### Principais recursos
-
-- Execução passo a passo com histórico navegável
-- Estruturas de dados em tempo real (fila/pilha, visitados, ordem de visita)
-- Pseudocódigo com linha ativa destacada
-- Editor de grafos integrado
-- Análise de conectividade: componentes conexos, pontes e pontos de articulação
-- Representações matemáticas: Lista, Matriz de Adjacência e Matriz de Incidência
-- Modo claro e escuro com persistência local
+> **Project under active development.** Contributions are welcome. Open an issue with suggestions or bugs!
 
 ---
 
-## Algoritmos Disponíveis
+## Overview
 
-| Algoritmo | Arquivo |
+G-Visualizer allows students to **see every step of a graph algorithm happening** on the canvas, with data structures and pseudocode always in sync.
+
+The core approach is **per-step immutable state**: every state transition is a pure function, enabling forward and backward navigation through execution like a visual debugger.
+
+### Key Features
+
+- Step-by-step execution with navigable history
+- Real-time data structures (queue/stack, visited nodes, visit order)
+- Pseudocode with active line highlighting
+- Integrated graph editor
+- Connectivity analysis: connected components, bridges, and articulation points
+- Mathematical representations: Adjacency List, Adjacency Matrix, and Incidence Matrix
+- Light and dark modes with local persistence
+
+---
+
+## Available Algorithms
+
+| Algorithm | File |
 |-----------|---------|
-| Busca em Largura (BFS) | `src/algorithms/BFS.js` |
-| Busca em Profundidade (DFS) | `src/algorithms/DFS.js` |
-| Fecho Transitivo Direto (FTD) | `src/algorithms/FTC.js` |
-| Fecho Transitivo Indireto (FTI) | `src/algorithms/FTC.js` | 
-| Conectividade (SCC / Pontes / APs) | `src/algorithms/connectivity.js` |
+| Breadth-First Search (BFS) | `src/algorithms/BFS.js` |
+| Depth-First Search (DFS) | `src/algorithms/DFS.js` |
+| Direct Transitive Closure (FTD) | `src/algorithms/FT.js` |
+| Indirect Transitive Closure (FTI) | `src/algorithms/FT.js` | 
+| Topological Sort (TOPO) | `src/algorithms/TopologicalSort.js` |
+| Connectivity (SCC / Bridges / APs) | `src/algorithms/connectivity.js` |
 
-→ [Documentação completa dos algoritmos](docs/algorithms.md)
+→ [Full algorithm documentation](docs/algorithms.md)
 
 ---
 
-## Início Rápido
+## Quick Start
 
-**Pré-requisitos:** Node.js 18+ e npm 9+
+**Prerequisites:** Node.js 18+ and npm 9+
 
 ```bash
 git clone https://github.com/matheusmra/G-Visualizer.git
@@ -55,9 +56,9 @@ npm install
 npm run dev
 ```
 
-Abra [http://localhost:5173](http://localhost:5173).
+Open [http://localhost:5173](http://localhost:5173).
 
-**Build para produção:**
+**Build for production:**
 
 ```bash
 npm run build
@@ -66,36 +67,37 @@ npm run preview
 
 ---
 
-## Documentação
+## Documentation
 
-| Documento | Conteúdo |
+| Document | Content |
 |-----------|----------|
-| [docs/algorithms.md](docs/algorithms.md) | Descrição detalhada de BFS, DFS, FTD, FTI e Conectividade; estrutura do estado |
-| [docs/architecture.md](docs/architecture.md) | Estrutura do projeto, fluxo de execução, classes do canvas, rotas, sistema de temas |
-| [docs/panels.md](docs/panels.md) | Os quatro painéis do visualizador: Estruturas, Pseudocódigo, Conectividade e Representações |
-| [docs/contributing.md](docs/contributing.md) | Como adicionar algoritmos, presets e contribuir com o projeto |
+| [docs/algorithms.md](docs/algorithms.md) | Detailed description of BFS, DFS, FTD, FTI, and Connectivity; state structure guides |
+| [docs/architecture.md](docs/architecture.md) | Project structure, execution flow, canvas classes, routes, and theme system |
+| [docs/panels.md](docs/panels.md) | The four visualizer panels: Structures, Pseudocode, Connectivity, and Representations |
+| [docs/contributing.md](docs/contributing.md) | How to add algorithms, presets, and contribute to the project |
+| [docs/technical-debt.md](docs/technical-debt.md) | Project roadmap and known issues |
 
 ---
 
 ## Stack
 
-| Tecnologia | Versão | Uso |
+| Technology | Version | Usage |
 |------------|--------|-----|
-| React | 19 | Interface e gerenciamento de estado |
-| Vite | 5 | Build e servidor de desenvolvimento |
-| TailwindCSS | 4 | Estilização |
-| Cytoscape.js | 3 | Canvas e renderização do grafo |
-| React Router | 7 | Roteamento entre páginas |
+| React | 19 | Interface and state management |
+| Vite | 5 | Build and development server |
+| TailwindCSS | 4 | Styling |
+| Cytoscape.js | 3 | Canvas and graph rendering |
+| React Router | 7 | Page routing |
 
 ---
 
-## Contato
+## Contact
 
 - **Issues**: [GitHub Issues](https://github.com/matheusmra/G-Visualizer/issues)
 - **GitHub**: [@matheusmra](https://github.com/matheusmra)
 
-**Se este projeto foi útil, deixe uma estrela no repositório!**
+**If this project was useful, leave a star on the repository!**
 
 ---
 
-*Feito por Matheus*
+*Made by Matheus*
