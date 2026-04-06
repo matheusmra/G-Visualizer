@@ -112,11 +112,11 @@ const FEATURES = [
 
 export function FeaturesSection() {
   return (
-    <section className="px-6 md:px-12 py-24 bg-[#f2f4f6]/50 dark:bg-slate-900/30">
+    <section className="px-4 md:px-12 py-16 md:py-24 bg-[#f2f4f6]/50 dark:bg-slate-900/30">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-4">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-10 md:mb-16 gap-4">
           <div>
-            <h2 className="text-4xl font-bold tracking-tight mb-4 text-[#191c1e] dark:text-slate-50 font-headline">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-3 md:mb-4 text-[#191c1e] dark:text-slate-50 font-headline">
               Instrumentação Avançada
             </h2>
             <p className="text-[#515f74] dark:text-slate-400 max-w-lg">
@@ -126,11 +126,11 @@ export function FeaturesSection() {
           <div className="h-px flex-1 bg-[#c3c6d7]/30 dark:bg-slate-700/30 mx-12 hidden md:block" />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
           {FEATURES.map(f => (
             <div
               key={f.title}
-              className="bg-white dark:bg-slate-900 p-8 rounded-[2rem] border border-[#c3c6d7]/20 dark:border-slate-800 shadow-sm group hover:shadow-xl transition-all duration-300"
+              className="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-[2rem] border border-[#c3c6d7]/20 dark:border-slate-800 shadow-sm group hover:shadow-xl transition-all duration-300"
             >
               <div
                 className="w-14 h-14 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform"
@@ -152,10 +152,10 @@ export function AlgoLibrarySection() {
   const navigate = useNavigate();
 
   return (
-    <section id="algoritmos" className="px-6 md:px-12 py-24">
+    <section id="algoritmos" className="px-4 md:px-12 py-16 md:py-24">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold mb-4 text-[#191c1e] dark:text-slate-50 font-headline">
+        <div className="text-center mb-10 md:mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold mb-3 md:mb-4 text-[#191c1e] dark:text-slate-50 font-headline">
             Biblioteca Padrão
           </h2>
           <p className="text-[#515f74] dark:text-slate-400">
@@ -232,14 +232,14 @@ export function BentoPreview() {
   const isEdgeActive = (id) => current.activeEdges.includes(id);
 
   return (
-    <section className="px-6 md:px-12 py-12">
+      <section className="px-4 md:px-6 lg:px-12 py-8 md:py-12">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          <div className="lg:col-span-8 h-[520px] bg-[#e0e3e5] dark:bg-slate-900 rounded-3xl relative overflow-hidden shadow-inner border border-[#c3c6d7]/20 dark:border-slate-800 transition-colors">
+          <div className="lg:col-span-8 h-72 sm:h-96 md:h-[420px] lg:h-[520px] bg-[#e0e3e5] dark:bg-slate-900 rounded-3xl relative overflow-hidden shadow-inner border border-[#c3c6d7]/20 dark:border-slate-800 transition-colors">
             <div className="absolute inset-0 dot-grid opacity-10" />
 
             {/* SVG Graph - Animated */}
-            <svg className="absolute inset-0 w-full h-full p-24 md:p-32" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+            <svg className="absolute inset-0 w-full h-full p-10 sm:p-16 md:p-24 lg:p-32" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
               {/* Edges */}
               <line 
                 x1="20" y1="20" x2="50" y2="50" 
@@ -296,7 +296,7 @@ export function BentoPreview() {
             </svg>
 
             {/* Controller */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 glass-panel px-6 py-4 rounded-2xl flex items-center gap-6 shadow-2xl border border-white/40 dark:border-slate-700/40">
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 glass-panel px-4 md:px-6 py-3 md:py-4 rounded-2xl flex items-center gap-3 md:gap-6 shadow-2xl border border-white/40 dark:border-slate-700/40 max-w-[calc(100%-2rem)]">
               <button 
                 onClick={() => { setIsPlaying(false); prevStep(); }} 
                 aria-label="Passo anterior" 

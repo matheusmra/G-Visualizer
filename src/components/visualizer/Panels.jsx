@@ -12,7 +12,7 @@ export function ControlSidebar({
   isDone, history
 }) {
   return (
-    <aside className="w-52 shrink-0 border-r border-[#e0e3e5] dark:border-slate-800 flex flex-col bg-white dark:bg-slate-950 overflow-hidden">
+    <aside className="w-full md:w-52 shrink-0 border-r border-[#e0e3e5] dark:border-slate-800 flex flex-col bg-white dark:bg-slate-950 overflow-hidden">
       <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
 
         <div>
