@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import cytoscape from 'cytoscape';
 import { COMPONENT_COLORS } from '../../algorithms/connectivity.js';
 import { buildStylesheet } from '../../constants/cytoscape.js';
@@ -57,7 +57,7 @@ function nextLabel(cy) {
   return `N${i}`;
 }
 
-export default function GraphCanvas({
+const GraphCanvas = forwardRef(function GraphCanvas({
   elements,
   layout,
   algoState,
@@ -66,7 +66,13 @@ export default function GraphCanvas({
   isDirected,
   onGraphChange,
   connectivityHighlight, // { componentMap, bridgeIds, apIds } | null
-}) {
+}, ref) {
+  useImperativeHandle(ref, () => ({
+    randomize() {
+      if (!cyRef.current) return;
+      cyRef.current.layout({ name: 'cose', animate: true, fit: true, padding: 40 }).run();
+    },
+  }));
   const containerRef    = useRef(null);
   const cyRef           = useRef(null);
   const editModeRef     = useRef(editMode);
@@ -248,8 +254,10 @@ export default function GraphCanvas({
   return (
     <div
       ref={containerRef}
-      className="w-full h-full rounded-xl bg-slate-900"
+      className="w-full h-full"
       style={{ minHeight: 420, cursor }}
     />
   );
-}
+});
+
+export default GraphCanvas;

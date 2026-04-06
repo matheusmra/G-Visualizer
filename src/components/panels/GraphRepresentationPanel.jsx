@@ -46,14 +46,14 @@ function buildIncMatrix(elements, isDirected) {
   });
   // Edge labels: shorten auto-generated IDs for display
   const edgeLabels = edges.map((e, i) => {
-    const id = e.data.id;
-    return id.length <= 3 ? id : `e${i}`;
+    const id = e.data?.id;
+    return id && id.length <= 3 ? id : `e${i}`;
   });
   return { nodes, edges: edgeLabels, matrix };
 }
 
-export default function GraphRepresentationPanel({ elements, isDirected }) {
-  const [view, setView] = useState('adj-list');
+export default function GraphRepresentationPanel({ elements, isDirected, defaultView = 'adj-list' }) {
+  const [view, setView] = useState(defaultView);
 
   const adjList   = useMemo(() => buildAdjList(elements, isDirected),   [elements, isDirected]);
   const adjMatrix = useMemo(() => buildAdjMatrix(elements, isDirected), [elements, isDirected]);

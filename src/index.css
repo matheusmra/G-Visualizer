@@ -1,2 +1,47 @@
 @import 'tailwindcss';
 @custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-headline: "Space Grotesk", var(--default-font-family);
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+/* Dot-grid hero background */
+.dot-grid {
+  background-image: radial-gradient(circle, #737686 1px, transparent 1px);
+  background-size: 32px 32px;
+  opacity: 0.05;
+}
+
+/* Glassmorphism panel */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.dark .glass-panel {
+  background: rgba(15, 23, 42, 0.82);
+}
+
+/* Material Symbols font */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+  user-select: none;
+}
+
+/* Pulsing active node indicator */
+.active-dot {
+  box-shadow: 0 0 0 3px rgba(0, 74, 198, 0.18), 0 0 15px 2px rgba(0, 74, 198, 0.28);
+}
