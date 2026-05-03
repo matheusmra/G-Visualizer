@@ -2,7 +2,7 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 
-# Instala dependências (usando cache do Docker)
+# Instala dependências
 COPY package*.json ./
 RUN npm install
 
@@ -12,10 +12,14 @@ RUN npm run build
 
 # Stage 2: Serve
 FROM nginx:stable-alpine
-# Copia o build para o diretório do Nginx (ajuste 'dist' se o seu build sair em outra pasta)
+
+# Ajusta Nginx para rodar na porta 3000
+RUN sed -i 's/listen\(.*\)80;/listen 3000;/' /etc/nginx/conf.d/default.conf
+
+# Copia o build (ajuste se não for /dist)
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Expõe a porta 80 (o Coolify vai mapear para 3000 como configuramos)
-EXPOSE 80
+# Expõe a porta 3000
+EXPOSE 3000
 
 CMD ["nginx", "-g", "daemon off;"]
