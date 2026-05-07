@@ -1,0 +1,16 @@
+name: Deploy to WebTech Network
+
+on:
+  push:
+    branches: [main, main, master]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger WebTech deploy
+        run: |
+          curl -sf -X POST ${{ secrets.WEBTECH_DEPLOY_URL }} \
+            -H "Content-Type: application/json" \
+            -d '{"projectUuid":"${{ secrets.WEBTECH_PROJECT_UUID }}"}'
